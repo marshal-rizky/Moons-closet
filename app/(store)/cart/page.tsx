@@ -6,6 +6,7 @@ import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/config";
 import { CartItem } from "@/components/store/cart-item";
 import { Button } from "@/components/ui/button";
+import { FadeIn } from "@/components/ui/fade-in";
 import { Separator } from "@/components/ui/separator";
 
 export default function CartPage() {
@@ -13,14 +14,16 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-20 text-center sm:px-6">
-        <ShoppingBag className="mx-auto h-12 w-12 text-muted-foreground/50" />
-        <h1 className="mt-4 font-heading text-2xl font-semibold">Keranjang Kosong</h1>
-        <p className="mt-2 text-muted-foreground">Belum ada produk di keranjang kamu.</p>
-        <Link href="/shop" className="mt-6 inline-block">
-          <Button className="text-xs uppercase tracking-widest">Mulai Belanja</Button>
-        </Link>
-      </div>
+      <FadeIn>
+        <div className="mx-auto max-w-2xl px-4 py-20 text-center sm:px-6">
+          <ShoppingBag className="mx-auto h-12 w-12 text-muted-foreground/50" />
+          <h1 className="mt-4 font-heading text-2xl font-semibold">Keranjang Kosong</h1>
+          <p className="mt-2 text-muted-foreground">Belum ada produk di keranjang kamu.</p>
+          <Link href="/shop" className="mt-6 inline-block">
+            <Button className="text-xs uppercase tracking-widest">Mulai Belanja</Button>
+          </Link>
+        </div>
+      </FadeIn>
     );
   }
 
