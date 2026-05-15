@@ -14,10 +14,33 @@ export async function POST(request: Request) {
       );
     }
 
+    const nameTrimmed = customer_name.trim();
+    if (nameTrimmed.length < 2 || nameTrimmed.length > 100) {
+      return NextResponse.json(
+        { error: "Nama harus antara 2-100 karakter." },
+        { status: 400 }
+      );
+    }
+
+    const addressTrimmed = customer_address.trim();
+    if (addressTrimmed.length < 10 || addressTrimmed.length > 500) {
+      return NextResponse.json(
+        { error: "Alamat harus antara 10-500 karakter." },
+        { status: 400 }
+      );
+    }
+
     const phoneClean = customer_phone.replace(/\D/g, "");
     if (phoneClean.length < 10 || phoneClean.length > 15) {
       return NextResponse.json(
         { error: "Nomor WhatsApp tidak valid." },
+        { status: 400 }
+      );
+    }
+
+    if (items.length > 50) {
+      return NextResponse.json(
+        { error: "Maksimal 50 item per pesanan." },
         { status: 400 }
       );
     }
@@ -126,6 +149,17 @@ export async function POST(request: Request) {
         { error: "Gagal membuat pesanan. Silakan coba lagi." },
         { status: 500 }
       );
+    }
+
+    // --- Decrement stock for each ordered product ---
+    for (const item of orderItems) {
+      const product = productMap.get(item.product_id);
+      if (product) {
+        await supabase
+          .from("products")
+          .update({ stock: product.stock - item.quantity })
+          .eq("id", item.product_id);
+      }
     }
 
     return NextResponse.json({ success: true, order: data });

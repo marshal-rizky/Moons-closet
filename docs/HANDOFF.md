@@ -1,8 +1,9 @@
 # Clothing Store Website — Handoff Document
 
 **Date:** 2026-05-15
-**Status:** 12/14 tasks complete
-**Branch:** master (13 commits)
+**Status:** 14/14 tasks complete — DEPLOYED
+**Branch:** master
+**Production URL:** https://clothing-website-beryl.vercel.app
 
 ---
 
@@ -13,12 +14,13 @@
 - **Shop** (`/shop`) — Full catalog with category filter tabs, product grid
 - **Product Detail** (`/product/[slug]`) — Image gallery, size selector, stock indicator, add-to-cart
 - **Cart** (`/cart`) — Line items with quantity controls, empty state, running total
-- **Checkout** (`/checkout`) — Form (name, WhatsApp, address, notes) → saves order to DB → success state
+- **Checkout** (`/checkout`) — Form (name, WhatsApp, address, notes) → server-side validated → success state
 - **Contact** (`/contact`) — WhatsApp link, email, address (all from env vars)
 - **Navbar** — Sticky header, desktop nav links, cart badge with item count, mobile hamburger (Sheet)
 - **Footer** — 3-column: store info, quick links, contact details
+- **404 Page** — Branded not-found page in Indonesian
 
-### Admin Panel (`/admin/*`)
+### Admin Panel (`/admin/*`) — Auth-Protected
 - **Login** (`/admin/login`) — Supabase email/password auth
 - **Dashboard** (`/admin`) — Stats cards (pending orders, total products, monthly revenue) + recent orders table
 - **Products** (`/admin/products`) — List with thumbnails, price, stock, active/inactive toggle
@@ -28,65 +30,55 @@
 - **Order Detail** (`/admin/orders/[id]`) — Full order info, items list, status updater (pending → confirmed → shipped → done)
 
 ### API Routes
-- `POST /api/orders` — Create order (validates WhatsApp format, generates order number)
+- `POST /api/orders` — Create order (server-side price recalculation, validates stock/sizes/active status)
 - `PATCH /api/orders/[id]` — Update order status
-- `POST /api/products` — Create product (auto-generates slug)
-- `PUT /api/products/[id]` — Update product
+- `POST /api/products` — Create product (field whitelist, slug generation with collision handling)
+- `PUT /api/products/[id]` — Update product (validated, slug regeneration on name change)
 - `DELETE /api/products/[id]` — Soft delete (sets is_active=false)
 - `POST /api/upload` — Image upload to Supabase Storage (validates type/size)
 
-### Infrastructure
+### Infrastructure & Security
 - Supabase clients: browser, server (SSR cookies), admin (service role)
-- Auth middleware protecting `/admin/*` routes (redirects to login)
+- **Defense-in-depth auth:** proxy.ts (Next.js 16) + server-side auth check in admin dashboard layout
+- Admin route group `(dashboard)` with server-side `getUser()` check — login page outside this group to prevent redirect loops
 - Cart Context with localStorage persistence
 - All branding from `NEXT_PUBLIC_*` env vars — nothing hardcoded
+- Checkout hardened: server-side price lookup, total recalculation, stock/size/active validation
+- Product APIs: field whitelisting, input validation, slug collision handling
+- Supabase RLS policies for data access control
+- Turbopack root pinned in next.config.ts (prevents workspace inference issues)
+- Remote image patterns configured for Supabase Storage
 
 ---
 
-## What's NOT Done
+## Deployment
 
-### Task 13: Final Polish & Verification
-- Add dynamic metadata to root layout (from env vars)
-- Create custom 404 page
-- Run `next build` to verify no errors
+### Production
+- **URL:** https://clothing-website-beryl.vercel.app
+- **Platform:** Vercel (marshal-rizkys-projects)
+- **Supabase:** https://mfndnciwfvkadggukmvq.supabase.co
 
-### Task 14: Deploy to Vercel
-- Install Vercel CLI
-- Set up Supabase project (cloud)
-- Run `schema.sql` and `seed.sql`
-- Create storage bucket
-- Configure env vars on Vercel
-- Deploy
-- Create admin user via Supabase dashboard
+### Environment Variables (set on Vercel)
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `NEXT_PUBLIC_STORE_NAME`
+- `NEXT_PUBLIC_STORE_TAGLINE`
+- `NEXT_PUBLIC_STORE_WHATSAPP`
+- `NEXT_PUBLIC_STORE_EMAIL`
+- `NEXT_PUBLIC_STORE_ADDRESS`
+
+### To Update Branding
+Change env vars in [Vercel Dashboard → Settings → Environment Variables](https://vercel.com/marshal-rizkys-projects/clothing-website/settings/environment-variables), then redeploy.
 
 ---
 
-## Prerequisites Before Running
+## Local Development
 
-### 1. Supabase Project
-Create a project at [supabase.com](https://supabase.com), then:
-1. Run `supabase/schema.sql` in SQL Editor (creates tables, RLS policies, triggers, indexes, storage bucket)
-2. Run `supabase/seed.sql` in SQL Editor (inserts 8 sample products)
-3. Create a storage bucket named `product-images` (public)
-4. Create an admin user: Authentication → Users → Add User (email/password)
+### 1. Environment Variables
+Create `.env.local` with Supabase credentials and store branding (see `.env.example`).
 
-### 2. Environment Variables
-Create `.env.local`:
-```env
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
-SUPABASE_SERVICE_ROLE_KEY=eyJ...
-
-# Store Branding (all customizable)
-NEXT_PUBLIC_STORE_NAME=Nama Toko
-NEXT_PUBLIC_STORE_TAGLINE=Tagline toko
-NEXT_PUBLIC_STORE_WHATSAPP=628000000000
-NEXT_PUBLIC_STORE_EMAIL=email@example.com
-NEXT_PUBLIC_STORE_ADDRESS=Alamat toko
-```
-
-### 3. Run Locally
+### 2. Run Locally
 ```bash
 npm install
 npm run dev
@@ -97,26 +89,31 @@ npm run dev
 ---
 
 ## Tech Stack
-- **Framework:** Next.js 15 (App Router)
-- **Styling:** Tailwind CSS v4 + shadcn/ui
+- **Framework:** Next.js 16.2.6 (App Router, Turbopack)
+- **Styling:** Tailwind CSS v4 + shadcn/ui (Base UI)
 - **Database:** Supabase (PostgreSQL + Auth + Storage)
 - **Fonts:** Cormorant (headings) + Montserrat (body)
 - **Language:** Bahasa Indonesia
 - **Currency:** IDR (Rupiah)
+- **Deployment:** Vercel
 
 ## Architecture Notes
-- Route groups: `(store)` for public pages, `(admin)` for protected pages
+- Route groups: `(store)` for public pages, `(admin)` with nested `(dashboard)` for auth-protected pages
+- Login page at `(admin)/admin/login/` — outside `(dashboard)` group to avoid redirect loops
+- `proxy.ts` (Next.js 16 convention, replaces deprecated `middleware.ts`) for route-level auth
 - Client-side cart (no auth required for shoppers)
-- Order flow: customer fills form → order saved to DB → admin reviews & updates status
-- No payment gateway — manual confirmation by admin
+- Order flow: customer fills form → server validates & recalculates prices → order saved → admin reviews & updates status
+- No payment gateway — manual confirmation by admin via WhatsApp
 - Products use soft delete (`is_active` flag)
 - JSONB columns for flexibility (images array, sizes array, order items)
 
 ## Future Plans
 - Delivery integration (JNE, GoSend, GrabExpress) — architecture kept malleable for this
-- Payment gateway integration
+- Payment gateway integration (Midtrans/Xendit)
+- WhatsApp notification on new orders
 - Real product photos to replace placeholder images
 - Store name and branding finalization
+- Stock decrement on order creation/confirmation
 
 ---
 
@@ -124,47 +121,49 @@ npm run dev
 
 ```
 app/
-├── (store)/          # Public storefront
-│   ├── layout.tsx    # Navbar + Footer wrapper
-│   ├── page.tsx      # Home
-│   ├── shop/         # Catalog
-│   ├── product/[slug]/ # Product detail
-│   ├── cart/         # Shopping cart
-│   ├── checkout/     # Checkout form
-│   └── contact/      # Contact info
-├── (admin)/admin/    # Admin panel (auth-protected)
-│   ├── layout.tsx    # Sidebar wrapper
-│   ├── login/        # Login form
-│   ├── page.tsx      # Dashboard
-│   ├── products/     # CRUD
-│   └── orders/       # Management
-├── api/              # API routes
-│   ├── orders/       # Order endpoints
-│   ├── products/     # Product endpoints
-│   └── upload/       # Image upload
-├── layout.tsx        # Root layout
-└── globals.css       # Theme + Tailwind
+├── (store)/              # Public storefront
+│   ├── layout.tsx        # Navbar + Footer wrapper
+│   ├── page.tsx          # Home
+│   ├── shop/             # Catalog
+│   ├── product/[slug]/   # Product detail
+│   ├── cart/             # Shopping cart
+│   ├── checkout/         # Checkout form
+│   └── contact/          # Contact info
+├── (admin)/admin/        # Admin panel
+│   ├── layout.tsx        # Pass-through (no auth)
+│   ├── login/            # Login form (no auth required)
+│   └── (dashboard)/      # Auth-protected group
+│       ├── layout.tsx    # Auth check + sidebar
+│       ├── page.tsx      # Dashboard
+│       ├── products/     # Product CRUD
+│       └── orders/       # Order management
+├── api/                  # API routes
+│   ├── orders/           # Order endpoints
+│   ├── products/         # Product endpoints
+│   └── upload/           # Image upload
+├── layout.tsx            # Root layout
+├── not-found.tsx         # Custom 404
+└── globals.css           # Theme + Tailwind
 
 components/
-├── admin/            # Admin-specific components
-├── store/            # Store-specific components
-├── ui/               # shadcn/ui primitives
-└── providers.tsx     # Context providers
+├── admin/                # Admin-specific components
+├── store/                # Store-specific components
+├── ui/                   # shadcn/ui primitives
+└── providers.tsx         # Context providers
 
 lib/
-├── supabase/         # Supabase clients + middleware
-├── cart-context.tsx   # Cart state management
-├── config.ts         # Site config from env vars
-├── types.ts          # TypeScript types
-└── utils.ts          # cn() utility
+├── supabase/             # Supabase clients + middleware helper
+├── cart-context.tsx      # Cart state management
+├── config.ts             # Site config from env vars
+├── types.ts              # TypeScript types
+└── utils.ts              # cn() utility
+
+proxy.ts                  # Next.js 16 proxy (auth redirect)
+next.config.ts            # Turbopack root + image patterns
 
 supabase/
-├── schema.sql        # Full DB schema + RLS
-└── seed.sql          # Sample data
-
-docs/
-├── superpowers/specs/ # Design spec
-└── superpowers/plans/ # Implementation plan
+├── schema.sql            # Full DB schema + RLS
+└── seed.sql              # Sample data
 ```
 
 ---
@@ -172,3 +171,4 @@ docs/
 ## Reference Docs
 - **Design Spec:** `docs/superpowers/specs/2026-05-15-clothing-store-design.md`
 - **Implementation Plan:** `docs/superpowers/plans/2026-05-15-clothing-store-plan.md`
+- **Readiness Audit:** `docs/READINESS_WORRIES.md` (most issues now resolved)

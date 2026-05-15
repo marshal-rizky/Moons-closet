@@ -40,6 +40,7 @@ export function CartItem({ item }: { item: CartItemType }) {
             variant="ghost"
             size="icon"
             className="h-6 w-6"
+            aria-label={`Hapus ${item.name}`}
             onClick={() => removeItem(item.product_id, item.size)}
           >
             <X className="h-3 w-3" />
@@ -52,6 +53,7 @@ export function CartItem({ item }: { item: CartItemType }) {
               variant="outline"
               size="icon"
               className="h-7 w-7"
+              aria-label="Kurangi jumlah"
               onClick={() => updateQuantity(item.product_id, item.size, item.quantity - 1)}
             >
               <Minus className="h-3 w-3" />
@@ -61,6 +63,7 @@ export function CartItem({ item }: { item: CartItemType }) {
               variant="outline"
               size="icon"
               className="h-7 w-7"
+              aria-label="Tambah jumlah"
               onClick={() => updateQuantity(item.product_id, item.size, item.quantity + 1)}
             >
               <Plus className="h-3 w-3" />

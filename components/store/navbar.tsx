@@ -39,7 +39,7 @@ export function Navbar() {
 
         <div className="flex items-center gap-2">
           <Link href="/cart">
-            <Button variant="ghost" size="icon" className="relative">
+            <Button variant="ghost" size="icon" className="relative" aria-label="Keranjang belanja">
               <ShoppingBag className="h-5 w-5" />
               {totalItems > 0 && (
                 <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
@@ -52,7 +52,7 @@ export function Navbar() {
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger
               className="md:hidden"
-              render={<Button variant="ghost" size="icon" />}
+              render={<Button variant="ghost" size="icon" aria-label="Menu navigasi" />}
             >
               <Menu className="h-5 w-5" />
             </SheetTrigger>

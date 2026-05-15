@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
@@ -19,8 +19,13 @@ export default function CheckoutPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    if (items.length === 0 && !success) {
+      router.push("/cart");
+    }
+  }, [items.length, success, router]);
+
   if (items.length === 0 && !success) {
-    router.push("/cart");
     return null;
   }
 
@@ -122,7 +127,7 @@ export default function CheckoutPage() {
         </div>
         {error && <p className="text-sm text-destructive">{error}</p>}
         <Button type="submit" disabled={loading} className="w-full text-xs uppercase tracking-widest" size="lg">
-          {loading ? "Memproses..." : "Pesan Sekarang"}
+          {loading ? "Memproses\u2026" : "Pesan Sekarang"}
         </Button>
       </form>
     </div>

@@ -115,7 +115,7 @@ export function ProductForm({ product }: ProductFormProps) {
             {images.map((img, i) => (
               <div key={i} className="relative h-20 w-20 border border-border">
                 <img src={img} alt="" className="h-full w-full object-cover" />
-                <button type="button" onClick={() => removeImage(i)} className="absolute -right-1 -top-1 rounded-full bg-destructive p-0.5 text-white">
+                <button type="button" onClick={() => removeImage(i)} aria-label="Hapus foto" className="absolute -right-1 -top-1 rounded-full bg-destructive p-0.5 text-white">
                   <X className="h-3 w-3" />
                 </button>
               </div>
@@ -124,7 +124,7 @@ export function ProductForm({ product }: ProductFormProps) {
         )}
         <label className="flex cursor-pointer items-center justify-center gap-2 border-2 border-dashed border-border rounded-sm px-4 py-6 text-sm text-muted-foreground hover:border-foreground transition-colors">
           <Upload className="h-4 w-4" />
-          {uploading ? "Mengupload..." : "Klik untuk upload foto"}
+          {uploading ? "Mengupload\u2026" : "Klik untuk upload foto"}
           <input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={handleUpload} className="hidden" disabled={uploading} />
         </label>
       </div>
@@ -134,7 +134,7 @@ export function ProductForm({ product }: ProductFormProps) {
       </div>
       {error && <p className="text-sm text-destructive">{error}</p>}
       <div className="flex gap-3 pt-2">
-        <Button type="submit" disabled={saving}>{saving ? "Menyimpan..." : isEditing ? "Update Produk" : "Tambah Produk"}</Button>
+        <Button type="submit" disabled={saving}>{saving ? "Menyimpan\u2026" : isEditing ? "Update Produk" : "Tambah Produk"}</Button>
         <Button type="button" variant="outline" onClick={() => router.back()}>Batal</Button>
       </div>
     </form>

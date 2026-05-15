@@ -55,7 +55,7 @@ export default function AdminLoginPage() {
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
             <Button type="submit" disabled={loading} className="w-full">
-              {loading ? "Masuk..." : "Masuk"}
+              {loading ? "Masuk\u2026" : "Masuk"}
             </Button>
           </form>
         </CardContent>
