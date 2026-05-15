@@ -1,15 +1,16 @@
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { ProductCard } from "@/components/store/product-card";
-import { CategoryFilter } from "@/components/store/category-filter";
+import { ShopToolbar } from "@/components/store/shop-toolbar";
+import { ProductGridSkeleton } from "@/components/store/product-card-skeleton";
 import type { Product } from "@/lib/types";
 
 export default async function ShopPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; search?: string }>;
 }) {
-  const { category } = await searchParams;
+  const { category, search } = await searchParams;
   const supabase = await createClient();
 
   let query = supabase
@@ -20,6 +21,10 @@ export default async function ShopPage({
 
   if (category) {
     query = query.eq("category", category);
+  }
+
+  if (search) {
+    query = query.ilike("name", `%${search}%`);
   }
 
   const { data: products } = await query;
@@ -38,7 +43,7 @@ export default async function ShopPage({
       </h1>
 
       <Suspense fallback={null}>
-        <CategoryFilter categories={categories} />
+        <ShopToolbar categories={categories} initialSearch={search || ""} />
       </Suspense>
 
       <div className="mt-8 grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
@@ -49,7 +54,9 @@ export default async function ShopPage({
 
       {(!products || products.length === 0) && (
         <div className="py-20 text-center text-muted-foreground">
-          Belum ada produk dalam kategori ini.
+          {search
+            ? `Tidak ada produk "${search}"${category ? ` di kategori ${category}` : ""}.`
+            : "Belum ada produk dalam kategori ini."}
         </div>
       )}
     </div>
