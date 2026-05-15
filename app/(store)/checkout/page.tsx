@@ -43,13 +43,9 @@ export default function CheckoutPage() {
           notes: form.get("notes") || null,
           items: items.map((i) => ({
             product_id: i.product_id,
-            name: i.name,
             size: i.size,
             quantity: i.quantity,
-            price: i.price,
-            image: i.image,
           })),
-          total: totalPrice,
         }),
       });
 
