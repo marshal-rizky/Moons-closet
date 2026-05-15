@@ -47,6 +47,44 @@ export function sendAdminOrderAlert(order: Order) {
   }).catch((err) => console.error("Admin email failed:", err));
 }
 
+export function sendCustomerConfirmationNotification(order: Order) {
+  if (!order.customer_email) return;
+  const resend = getResend();
+  if (!resend) return;
+
+  resend.emails.send({
+    from: fromEmail,
+    to: order.customer_email,
+    subject: `Pesanan #${order.order_number} Dikonfirmasi`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 500px;">
+        <h2>Pesanan Anda Dikonfirmasi!</h2>
+        <p>Halo ${order.customer_name},</p>
+        <p>Pesanan <strong>#${order.order_number}</strong> telah dikonfirmasi dan sedang diproses.</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+          ${order.items
+            .map(
+              (item) => `
+            <tr style="border-bottom: 1px solid #eee;">
+              <td style="padding: 8px 0;">${item.name} (${item.size}) &times; ${item.quantity}</td>
+              <td style="padding: 8px 0; text-align: right;">${formatPrice(item.price * item.quantity)}</td>
+            </tr>`
+            )
+            .join("")}
+          <tr>
+            <td style="padding: 12px 0; font-weight: bold;">Total</td>
+            <td style="padding: 12px 0; font-weight: bold; text-align: right;">${formatPrice(order.total)}</td>
+          </tr>
+        </table>
+        <div style="padding: 12px; background: #f9f9f9;">
+          <p style="margin: 0;"><strong>Alamat pengiriman:</strong> ${order.customer_address}</p>
+        </div>
+        <p style="color: #666; font-size: 14px; margin-top: 16px;">Kami akan segera mengirimkan pesanan Anda. Terima kasih telah berbelanja di ${siteConfig.name}!</p>
+      </div>
+    `,
+  }).catch((err) => console.error("Customer confirmation email failed:", err));
+}
+
 export function sendCustomerShippingNotification(order: Order) {
   if (!order.customer_email) return;
   const resend = getResend();

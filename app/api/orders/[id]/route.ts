@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { sendCustomerShippingNotification } from "@/lib/email";
+import { sendCustomerConfirmationNotification, sendCustomerShippingNotification } from "@/lib/email";
 import type { Order } from "@/lib/types";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -17,7 +17,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  if (status === "shipped") {
+  if (status === "confirmed") {
+    sendCustomerConfirmationNotification(data as Order);
+  } else if (status === "shipped") {
     sendCustomerShippingNotification(data as Order);
   }
 
