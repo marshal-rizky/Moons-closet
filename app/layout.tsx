@@ -18,8 +18,8 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Nama Toko",
-  description: "Toko pakaian online",
+  title: process.env.NEXT_PUBLIC_STORE_NAME || "Toko Baju",
+  description: process.env.NEXT_PUBLIC_STORE_TAGLINE || "Toko baju online",
 };
 
 export default function RootLayout({
