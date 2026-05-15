@@ -43,7 +43,7 @@ export default async function HomePage() {
           <h2 className="font-heading text-2xl font-semibold tracking-wider text-center uppercase mb-8">
             Kategori
           </h2>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-3 gap-3 sm:gap-4">
             {categories.map((cat) => (
               <Link
                 key={cat}

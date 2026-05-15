@@ -40,7 +40,7 @@ export default async function AdminDashboardPage() {
     <div>
       <h1 className="font-heading text-2xl font-semibold mb-6">Dashboard</h1>
 
-      <div className="grid gap-4 sm:grid-cols-3 mb-8">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 mb-8">
         <StatsCard label="Pesanan Baru" value={pendingOrders || 0} />
         <StatsCard label="Total Produk" value={totalProducts || 0} />
         <StatsCard label="Pendapatan Bulan Ini" value={formatPrice(revenue)} />
@@ -52,11 +52,11 @@ export default async function AdminDashboardPage() {
           <Link
             key={order.id}
             href={`/admin/orders/${order.id}`}
-            className="flex items-center justify-between border-b border-border px-4 py-3 last:border-0 hover:bg-secondary/30 transition-colors"
+            className="flex items-center justify-between gap-2 border-b border-border px-3 py-3 last:border-0 hover:bg-secondary/30 transition-colors sm:px-4"
           >
-            <div>
+            <div className="min-w-0 flex-1">
               <span className="text-sm font-medium">{order.customer_name}</span>
-              <span className="ml-2 text-xs text-muted-foreground">
+              <span className="ml-1 text-xs text-muted-foreground sm:ml-2">
                 {order.items.length} item — {formatPrice(order.total)}
               </span>
             </div>

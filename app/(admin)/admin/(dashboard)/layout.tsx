@@ -12,9 +12,9 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
   }
 
   return (
-    <div className="flex min-h-dvh">
+    <div className="min-h-dvh md:flex">
       <AdminSidebar />
-      <main className="flex-1 overflow-y-auto p-6">{children}</main>
+      <main className="flex-1 overflow-y-auto p-4 sm:p-6">{children}</main>
     </div>
   );
 }
