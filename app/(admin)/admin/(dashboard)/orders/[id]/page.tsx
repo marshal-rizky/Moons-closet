@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { formatPrice } from "@/lib/config";
 import { OrderStatusBadge } from "@/components/admin/order-status-badge";
+import { OrderTimeline } from "@/components/admin/order-timeline";
 import { OrderStatusUpdater } from "./status-updater";
 import type { Order } from "@/lib/types";
 
@@ -23,6 +24,10 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           </p>
         </div>
         <OrderStatusBadge status={o.status} />
+      </div>
+
+      <div className="mb-6">
+        <OrderTimeline currentStatus={o.status} />
       </div>
 
       <div className="rounded-sm border border-border p-4 mb-6">
