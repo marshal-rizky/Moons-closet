@@ -2,10 +2,17 @@ import { Resend } from "resend";
 import { formatPrice, siteConfig } from "@/lib/config";
 import type { Order } from "@/lib/types";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
 
+function getResend() {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return null;
+  return new Resend(key);
+}
+
 export function sendAdminOrderAlert(order: Order) {
+  const resend = getResend();
+  if (!resend) return;
   const itemCount = order.items.reduce((sum, i) => sum + i.quantity, 0);
 
   resend.emails.send({
@@ -42,6 +49,8 @@ export function sendAdminOrderAlert(order: Order) {
 
 export function sendCustomerShippingNotification(order: Order) {
   if (!order.customer_email) return;
+  const resend = getResend();
+  if (!resend) return;
 
   resend.emails.send({
     from: fromEmail,
