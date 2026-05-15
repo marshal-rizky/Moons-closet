@@ -6,13 +6,17 @@ const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
 
 function getResend() {
   const key = process.env.RESEND_API_KEY;
-  if (!key) return null;
+  if (!key) {
+    console.warn("RESEND_API_KEY not set — skipping email");
+    return null;
+  }
   return new Resend(key);
 }
 
 export function sendAdminOrderAlert(order: Order) {
   const resend = getResend();
   if (!resend) return;
+  console.log("Sending admin alert email to:", siteConfig.email);
   const itemCount = order.items.reduce((sum, i) => sum + i.quantity, 0);
 
   resend.emails.send({
