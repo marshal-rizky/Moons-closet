@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant, Montserrat } from "next/font/google";
 import "./globals.css";
+import { Providers } from "@/components/providers";
 
 const cormorant = Cormorant({
   subsets: ["latin"],
@@ -28,7 +29,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" className={`${cormorant.variable} ${montserrat.variable}`}>
-      <body className="antialiased">{children}</body>
+      <body className="font-body antialiased">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
