@@ -1,9 +1,11 @@
 import { MessageCircle, Mail, MapPin } from "lucide-react";
 import { siteConfig } from "@/lib/config";
 import { Button } from "@/components/ui/button";
+import { Footer } from "@/components/store/footer";
 
 export default function ContactPage() {
   return (
+    <>
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
       <h1 className="font-heading text-3xl font-semibold tracking-wider uppercase mb-8">Kontak</h1>
 
@@ -47,5 +49,7 @@ export default function ContactPage() {
         </a>
       </div>
     </div>
+    <Footer />
+    </>
   );
 }

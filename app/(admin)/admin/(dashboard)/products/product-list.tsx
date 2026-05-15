@@ -8,12 +8,15 @@ import { Button } from "@/components/ui/button";
 import { PlaceholderImage } from "@/components/store/placeholder-image";
 import type { Product } from "@/lib/types";
 
-export function ProductList({ products }: { products: Product[] }) {
+export function ProductList({ products, categories }: { products: Product[]; categories: string[] }) {
   const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("");
 
-  const filtered = search
-    ? products.filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
-    : products;
+  const filtered = products.filter((p) => {
+    const matchesSearch = !search || p.name.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory = !category || p.category === category;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <>
@@ -26,6 +29,28 @@ export function ProductList({ products }: { products: Product[] }) {
           placeholder="Cari produk\u2026"
           className="h-10 w-full rounded-sm border border-border bg-background pl-10 pr-4 text-sm outline-none transition-colors focus:border-foreground"
         />
+      </div>
+
+      <div className="flex flex-wrap gap-2 mb-4">
+        <Button
+          variant={!category ? "default" : "outline"}
+          size="sm"
+          onClick={() => setCategory("")}
+          className="text-xs uppercase tracking-wider"
+        >
+          Semua
+        </Button>
+        {categories.map((cat) => (
+          <Button
+            key={cat}
+            variant={category === cat ? "default" : "outline"}
+            size="sm"
+            onClick={() => setCategory(cat)}
+            className="text-xs uppercase tracking-wider"
+          >
+            {cat}
+          </Button>
+        ))}
       </div>
 
       <div className="rounded-sm border border-border">
