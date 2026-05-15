@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { useCart } from "@/lib/cart-context";
+import { useToast } from "@/lib/toast-context";
 import { Button } from "@/components/ui/button";
 import type { Product } from "@/lib/types";
 
 export function AddToCartButton({ product }: { product: Product }) {
   const { addItem } = useCart();
+  const { toast } = useToast();
   const [selectedSize, setSelectedSize] = useState<string>("");
-  const [added, setAdded] = useState(false);
 
   const sizes = product.sizes as string[];
   const outOfStock = product.stock <= 0;
@@ -24,8 +25,7 @@ export function AddToCartButton({ product }: { product: Product }) {
       image: product.images[0] || null,
       slug: product.slug,
     });
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
+    toast.success("Ditambahkan ke keranjang!");
   }
 
   return (
@@ -66,11 +66,7 @@ export function AddToCartButton({ product }: { product: Product }) {
         className="w-full text-xs uppercase tracking-widest"
         size="lg"
       >
-        {added
-          ? "Ditambahkan!"
-          : outOfStock
-            ? "Stok Habis"
-            : "Tambah ke Keranjang"}
+        {outOfStock ? "Stok Habis" : "Tambah ke Keranjang"}
       </Button>
     </div>
   );
