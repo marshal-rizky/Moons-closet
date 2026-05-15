@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useToast } from "@/lib/toast-context";
 import { Button } from "@/components/ui/button";
 
 const statusFlow = [
@@ -12,6 +13,7 @@ const statusFlow = [
 
 export function OrderStatusUpdater({ orderId, currentStatus }: { orderId: string; currentStatus: string }) {
   const router = useRouter();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
   const currentIndex = statusFlow.findIndex((s) => s.status === currentStatus);
@@ -21,11 +23,20 @@ export function OrderStatusUpdater({ orderId, currentStatus }: { orderId: string
 
   async function updateStatus(newStatus: string) {
     setLoading(true);
-    await fetch(`/api/orders/${orderId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: newStatus }),
-    });
+    try {
+      const res = await fetch(`/api/orders/${orderId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (res.ok) {
+        toast.success("Status pesanan diperbarui");
+      } else {
+        toast.error("Gagal memperbarui status");
+      }
+    } catch {
+      toast.error("Terjadi kesalahan");
+    }
     router.refresh();
     setLoading(false);
   }
