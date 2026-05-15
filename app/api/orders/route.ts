@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendAdminOrderAlert } from "@/lib/email";
+import type { Order } from "@/lib/types";
 
 export async function POST(request: Request) {
   try {
@@ -161,6 +163,21 @@ export async function POST(request: Request) {
           .eq("id", item.product_id);
       }
     }
+
+    // --- Send admin notification email (fire-and-forget) ---
+    sendAdminOrderAlert({
+      ...data,
+      customer_name: customer_name.trim(),
+      customer_phone: phoneClean,
+      customer_email: customer_email?.trim() || null,
+      customer_address: customer_address.trim(),
+      items: orderItems,
+      total,
+      notes: notes?.trim() || null,
+      status: "pending",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    } as Order);
 
     return NextResponse.json({ success: true, order: data });
   } catch {
