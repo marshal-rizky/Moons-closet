@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { formatPrice } from "@/lib/config";
 import { AddToCartButton } from "@/components/store/add-to-cart-button";
-import { PlaceholderImage } from "@/components/store/placeholder-image";
+import { ProductGallery } from "@/components/store/product-gallery";
+import { FadeIn } from "@/components/ui/fade-in";
 import type { Product } from "@/lib/types";
 
 export default async function ProductPage({
@@ -24,69 +24,42 @@ export default async function ProductPage({
   if (!product) notFound();
 
   const p = product as Product;
-  const images = p.images as string[];
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
       <div className="grid gap-8 md:grid-cols-2 md:gap-12">
-        <div className="space-y-3">
-          <div className="aspect-[3/4] overflow-hidden bg-secondary/30">
-            {images.length > 0 ? (
-              <Image
-                src={images[0]}
-                alt={p.name}
-                width={600}
-                height={800}
-                className="h-full w-full object-cover"
-                priority
-              />
-            ) : (
-              <PlaceholderImage className="h-full w-full" />
-            )}
-          </div>
-          {images.length > 1 && (
-            <div className="grid grid-cols-4 gap-2">
-              {images.slice(1).map((img, i) => (
-                <div key={i} className="aspect-square overflow-hidden bg-secondary/30">
-                  <Image
-                    src={img}
-                    alt={`${p.name} ${i + 2}`}
-                    width={150}
-                    height={150}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <FadeIn>
+          <ProductGallery images={p.images} name={p.name} />
+        </FadeIn>
 
-        <div className="flex flex-col gap-6">
-          <div>
-            <p className="text-xs uppercase tracking-wider text-muted-foreground">
-              {p.category}
-            </p>
-            <h1 className="mt-2 font-heading text-3xl font-semibold">
-              {p.name}
-            </h1>
-            <p className="mt-2 text-xl text-muted-foreground">
-              {formatPrice(p.price)}
-            </p>
-          </div>
-
-          <AddToCartButton product={p} />
-
-          {p.description && (
-            <div className="border-t border-border pt-6">
-              <h2 className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">
-                Deskripsi
-              </h2>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {p.description}
+        <FadeIn direction="right" delay={0.1}>
+          <div className="flex flex-col gap-6">
+            <div>
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">
+                {p.category}
+              </p>
+              <h1 className="mt-2 font-heading text-3xl font-semibold">
+                {p.name}
+              </h1>
+              <p className="mt-2 text-xl text-muted-foreground">
+                {formatPrice(p.price)}
               </p>
             </div>
-          )}
-        </div>
+
+            <AddToCartButton product={p} />
+
+            {p.description && (
+              <div className="border-t border-border pt-6">
+                <h2 className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">
+                  Deskripsi
+                </h2>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {p.description}
+                </p>
+              </div>
+            )}
+          </div>
+        </FadeIn>
       </div>
     </div>
   );
