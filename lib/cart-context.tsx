@@ -17,24 +17,15 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const CART_STORAGE_KEY = "clothing-store-cart";
 
-function loadCart(): CartItem[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const stored = localStorage.getItem(CART_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-}
-
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setItems(loadCart());
-    setMounted(true);
-  }, []);
+  const [items, setItems] = useState<CartItem[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const stored = localStorage.getItem(CART_STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch { return []; }
+  });
+  const [mounted] = useState(() => typeof window !== "undefined");
 
   useEffect(() => {
     if (mounted) {
