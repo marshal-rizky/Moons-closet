@@ -119,6 +119,12 @@ def main():
     divider = boost_alpha(divider, gamma=0.35, floor=0.02)
     divider.save(os.path.join(BRAND, "mark-divider.png"))
 
+    # Full gold logo at 2x divider display height (h-20 = 80px), alpha-lifted.
+    ratio = gold.size[0] / gold.size[1]
+    logo_divider = gold.resize((round(160 * ratio), 160), Image.LANCZOS)
+    logo_divider = boost_alpha(logo_divider, gamma=0.5, floor=0.02)
+    logo_divider.save(os.path.join(BRAND, "logo-gold-divider.png"))
+
     # Favicon: gold mark centered on cream square.
     icon = Image.new("RGBA", (512, 512), CREAM + (255,))
     m = mark.copy()
