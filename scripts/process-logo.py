@@ -111,6 +111,14 @@ def main():
     mark.save(os.path.join(BRAND, "mark-gold.png"))
     recolor(mark, (0, 0, 0)).save(os.path.join(BRAND, "mark-black.png"))
 
+    # Divider mark: pre-rendered at 2x its display height (h-16 = 64px) with a
+    # strong alpha lift, so the hairline arcs survive instead of being thinned
+    # away by browser downscaling from the 383px master.
+    ratio = mark.size[0] / mark.size[1]
+    divider = mark.resize((round(128 * ratio), 128), Image.LANCZOS)
+    divider = boost_alpha(divider, gamma=0.35, floor=0.02)
+    divider.save(os.path.join(BRAND, "mark-divider.png"))
+
     # Favicon: gold mark centered on cream square.
     icon = Image.new("RGBA", (512, 512), CREAM + (255,))
     m = mark.copy()

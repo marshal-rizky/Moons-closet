@@ -15,12 +15,13 @@ export default function LinksPage() {
   return (
     <div className="flex min-h-dvh flex-col items-center bg-cream px-6 py-16 sm:py-24">
       <Image
-        src="/brand/mark-gold.png?v=2"
+        src="/brand/mark-divider.png?v=2"
         alt=""
         aria-hidden
-        width={383}
-        height={204}
+        width={240}
+        height={128}
         priority
+        unoptimized
         className="h-12 w-auto sm:h-14"
       />
       <Image

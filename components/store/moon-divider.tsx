@@ -8,11 +8,12 @@ export function MoonDivider() {
       <div className="flex items-center justify-center gap-6 px-8 sm:gap-10">
         <span aria-hidden className="h-px max-w-[160px] flex-1 bg-foreground/10" />
         <Image
-          src="/brand/mark-gold.png?v=2"
+          src="/brand/mark-divider.png?v=2"
           alt={`${siteConfig.name} mark`}
-          width={383}
-          height={204}
-          className="h-12 w-auto sm:h-14"
+          width={240}
+          height={128}
+          unoptimized
+          className="h-12 w-auto sm:h-16"
         />
         <span aria-hidden className="h-px max-w-[160px] flex-1 bg-foreground/10" />
       </div>
