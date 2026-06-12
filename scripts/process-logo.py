@@ -96,6 +96,11 @@ def main():
     nav.thumbnail((720, 10_000))
     nav.save(os.path.join(BRAND, "logo-black-nav.png"))
 
+    white = recolor(gold, (255, 255, 255))
+    nav_white = trim(white.crop((0, 0, w, round(h * 0.70))), pad_frac=0.02)
+    nav_white.thumbnail((720, 10_000))
+    nav_white.save(os.path.join(BRAND, "logo-white-nav.png"))
+
     # Mark = the interlocking "OO" crescents of MOON'S. Crop box is relative to
     # the trimmed gold logo; tuned by eye against the source render.
     w, h = gold.size

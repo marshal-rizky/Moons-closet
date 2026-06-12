@@ -47,12 +47,12 @@ export default async function HomePage() {
                 <FadeIn>
                   <div className="text-center text-background mix-blend-difference">
                     <Image
-                      src="/brand/logo-white.png?v=2"
+                      src="/brand/logo-white-nav.png?v=2"
                       alt={siteConfig.name}
-                      width={1021}
-                      height={459}
+                      width={720}
+                      height={219}
                       priority
-                      className="mx-auto h-10 w-auto sm:h-14"
+                      className="mx-auto h-12 w-auto sm:h-20"
                     />
                     <p className="mt-3 text-[11px] tracking-[0.18em] uppercase">
                       <span className="font-heading italic">presents</span>
