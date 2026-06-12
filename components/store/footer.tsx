@@ -28,11 +28,11 @@ export function Footer() {
 
           <div className="flex flex-col gap-2 text-[12px] tracking-[0.04em]">
             <Image
-              src="/brand/logo-black.png"
+              src="/brand/logo-black-nav.png?v=2"
               alt={siteConfig.name}
-              width={1021}
-              height={459}
-              className="mb-2 h-6 w-auto"
+              width={720}
+              height={219}
+              className="mb-2 h-7 w-auto self-start"
             />
             <p>{siteConfig.tagline}</p>
           </div>

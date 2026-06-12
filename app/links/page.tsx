@@ -15,7 +15,7 @@ export default function LinksPage() {
   return (
     <div className="flex min-h-dvh flex-col items-center bg-cream px-6 py-16 sm:py-24">
       <Image
-        src="/brand/mark-gold.png"
+        src="/brand/mark-gold.png?v=2"
         alt=""
         aria-hidden
         width={383}
@@ -24,11 +24,11 @@ export default function LinksPage() {
         className="h-12 w-auto sm:h-14"
       />
       <Image
-        src="/brand/logo-black.png"
+        src="/brand/logo-black-nav.png?v=2"
         alt={siteConfig.name}
-        width={1021}
-        height={459}
-        className="mt-6 h-8 w-auto sm:h-9"
+        width={720}
+        height={219}
+        className="mt-6 h-9 w-auto sm:h-10"
       />
       <p className="mt-3 text-[11px] tracking-[0.18em] uppercase opacity-60">
         {siteConfig.tagline}

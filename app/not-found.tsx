@@ -5,7 +5,7 @@ export default function NotFound() {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center px-6 text-center">
       <Image
-        src="/brand/mark-black.png"
+        src="/brand/mark-black.png?v=2"
         alt=""
         aria-hidden
         width={383}

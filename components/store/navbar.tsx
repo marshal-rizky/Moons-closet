@@ -55,10 +55,10 @@ export function Navbar() {
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
           >
             <Image
-              src="/brand/logo-black-nav.png"
+              src="/brand/logo-black-nav.png?v=2"
               alt={siteConfig.name}
               width={720}
-              height={324}
+              height={219}
               priority
               className="h-7 w-auto sm:h-8"
             />
@@ -127,10 +127,10 @@ export function Navbar() {
                 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
               >
                 <Image
-                  src="/brand/logo-black-nav.png"
+                  src="/brand/logo-black-nav.png?v=2"
                   alt={siteConfig.name}
                   width={720}
-                  height={324}
+                  height={219}
                   className="h-7 w-auto sm:h-8"
                 />
               </Link>

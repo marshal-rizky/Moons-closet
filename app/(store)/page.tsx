@@ -47,7 +47,7 @@ export default async function HomePage() {
                 <FadeIn>
                   <div className="text-center text-background mix-blend-difference">
                     <Image
-                      src="/brand/logo-white.png"
+                      src="/brand/logo-white.png?v=2"
                       alt={siteConfig.name}
                       width={1021}
                       height={459}

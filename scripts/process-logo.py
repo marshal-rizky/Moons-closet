@@ -61,24 +61,22 @@ def trim(im, pad_frac=0.04):
     return im.crop(box)
 
 
-def recolor(im, rgb):
-    # Monochrome versions: remap alpha to suppress the lens-flare glow halo
-    # (semi-transparent in the gold original, a smudge when flooded one color).
+def boost_alpha(im, gamma=0.6, floor=0.05):
+    # Gamma-lift partial alpha so thin serif strokes survive downscaling;
+    # cut a small floor so the faint flare halo doesn't smudge.
     a = im.getchannel("A").point(
-        lambda v: round(255 * smoothstep_unit(v / 255, 0.35, 0.75))
+        lambda v: 0 if v / 255 <= floor else round(255 * (v / 255) ** gamma)
     )
-    out = Image.new("RGBA", im.size)
-    out.paste(Image.new("RGB", im.size, rgb), mask=a)
+    out = im.copy()
+    out.putalpha(a)
     return out
 
 
-def smoothstep_unit(x, lo, hi):
-    if x <= lo:
-        return 0.0
-    if x >= hi:
-        return 1.0
-    t = (x - lo) / (hi - lo)
-    return t * t * (3 - 2 * t)
+def recolor(im, rgb):
+    boosted = boost_alpha(im)
+    out = Image.new("RGBA", im.size)
+    out.paste(Image.new("RGB", im.size, rgb), mask=boosted.getchannel("A"))
+    return out
 
 
 def main():
@@ -91,7 +89,10 @@ def main():
     black.save(os.path.join(BRAND, "logo-black.png"))
     recolor(gold, (255, 255, 255)).save(os.path.join(BRAND, "logo-white.png"))
 
-    nav = black.copy()
+    # Nav wordmark: crop off the dotted star ornament under "CLOSET" so the
+    # wordmark fills the header height instead of empty descender space.
+    w, h = black.size
+    nav = trim(black.crop((0, 0, w, round(h * 0.70))), pad_frac=0.02)
     nav.thumbnail((720, 10_000))
     nav.save(os.path.join(BRAND, "logo-black-nav.png"))
 
@@ -99,7 +100,9 @@ def main():
     # the trimmed gold logo; tuned by eye against the source render.
     w, h = gold.size
     mark_box = (round(w * 0.24), 0, round(w * 0.63), round(h * 0.50))
-    mark = trim(gold.crop(mark_box), pad_frac=0.06)
+    # Stronger boost for the mark: its crescents are hairline-thin and must
+    # survive 40-60px display heights.
+    mark = boost_alpha(trim(gold.crop(mark_box), pad_frac=0.06), gamma=0.45)
     mark.save(os.path.join(BRAND, "mark-gold.png"))
     recolor(mark, (0, 0, 0)).save(os.path.join(BRAND, "mark-black.png"))
 
