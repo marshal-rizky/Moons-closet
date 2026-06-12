@@ -131,6 +131,7 @@ def main():
     m.thumbnail((360, 360))
     icon.alpha_composite(m, ((512 - m.size[0]) // 2, (512 - m.size[1]) // 2))
     icon.save(os.path.join(ROOT, "app", "icon.png"))
+    icon.save(os.path.join(BRAND, "avatar.png"))  # /links avatar (localPatterns allows /brand/** only)
 
     for name in ("logo-gold", "logo-black", "logo-white", "logo-black-nav", "mark-gold", "mark-black"):
         p = os.path.join(BRAND, f"{name}.png")
