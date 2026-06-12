@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { siteConfig } from "@/lib/config";
 
 export function Footer() {
@@ -25,9 +26,16 @@ export function Footer() {
             <p>{siteConfig.address}</p>
           </FooterCol>
 
-          <FooterCol heading={siteConfig.name}>
+          <div className="flex flex-col gap-2 text-[12px] tracking-[0.04em]">
+            <Image
+              src="/brand/logo-black.png"
+              alt={siteConfig.name}
+              width={1021}
+              height={459}
+              className="mb-2 h-6 w-auto"
+            />
             <p>{siteConfig.tagline}</p>
-          </FooterCol>
+          </div>
         </div>
 
         <div className="mt-16 flex flex-col gap-2 border-t border-foreground/10 pt-6 text-[11px] tracking-[0.08em] uppercase sm:flex-row sm:items-center sm:justify-between">

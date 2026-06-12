@@ -93,6 +93,8 @@ Production deploys from `main` on Vercel. To enable auto-deploy on push, connect
 
 To change branding, edit env vars on Vercel and redeploy — no code changes.
 
+> **Pending manual step:** set `NEXT_PUBLIC_STORE_NAME="Moon's Closet"`, `NEXT_PUBLIC_STORE_TAGLINE`, and `NEXT_PUBLIC_STORE_WHATSAPP="6287702228429"` in Vercel → Settings → Environment Variables, then redeploy. Local `.env.local` already has these values.
+
 ---
 
 ## License

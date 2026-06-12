@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Product } from "@/lib/types";
 import { formatPrice } from "@/lib/config";
+import { effectiveImages, hasVariants } from "@/lib/variants";
 
 const SWATCHES = [
   "zara-swatch-1",
@@ -21,15 +22,17 @@ function swatchFor(slug: string) {
 }
 
 export function ProductCard({ product, large = false }: { product: Product; large?: boolean }) {
-  const hasImage = product.images.length > 0;
+  const images = effectiveImages(product);
+  const hasImage = images.length > 0;
   const swatch = swatchFor(product.slug);
+  const variants = hasVariants(product) ? product.variants : [];
 
   return (
     <Link href={`/product/${product.slug}`} className="group block">
       <div className={`aspect-[3/4] overflow-hidden ${hasImage ? "" : swatch}`}>
         {hasImage ? (
           <Image
-            src={product.images[0]}
+            src={images[0]}
             alt={product.name}
             width={large ? 1200 : 600}
             height={large ? 1600 : 800}
@@ -50,6 +53,23 @@ export function ProductCard({ product, large = false }: { product: Product; larg
           <p className="mt-1 text-[11px] tracking-[0.04em] uppercase tabular-nums">
             {formatPrice(product.price)}
           </p>
+          {variants.length > 0 && (
+            <div className="mt-2 flex items-center gap-1">
+              {variants.slice(0, 4).map((v) => (
+                <span
+                  key={v.color}
+                  title={v.color}
+                  className="h-2 w-2 border border-foreground/20"
+                  style={{ backgroundColor: v.hex }}
+                />
+              ))}
+              {variants.length > 4 && (
+                <span className="text-[10px] tracking-[0.04em] opacity-60">
+                  +{variants.length - 4}
+                </span>
+              )}
+            </div>
+          )}
         </div>
         <span
           aria-hidden

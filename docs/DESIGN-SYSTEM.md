@@ -161,7 +161,26 @@ Framer Motion is used for entrance animations only. Conventions:
 
 ---
 
-## 9. What's intentionally NOT in the system
+## 9. Brand assets (added 2026-06-12)
+
+Source logo (rose-gold on cream) processed by `scripts/process-logo.py` into `public/brand/`:
+
+| Asset | Use |
+|---|---|
+| `logo-black-nav.png` | Navbar + menu drawer wordmark (720px, display ≤360px) |
+| `logo-black.png` | Footer brand column, light backgrounds |
+| `logo-white.png` | Home hero inside `mix-blend-difference` container |
+| `logo-gold.png` | Original metallic version — reserve for special placements |
+| `mark-gold.png` | Moon divider (home), links page header, favicon source |
+| `mark-black.png` | 404 page; monochrome contexts |
+| `app/icon.png` | Favicon — gold mark on cream |
+
+Rules:
+- **Cream `#faf0e6`** is exposed as the `cream` Tailwind color (`bg-cream`) — the ONLY sanctioned non-B/W chrome color. Current uses: moon divider band, `/links` page background, favicon. Do not spread it further without a system-level discussion.
+- **Gold** appears only in: moon divider mark, links page mark, favicon. Everything else uses the black (or white-blend) logo.
+- Color variant swatches on product cards/PDP use each variant's `hex` inline — product data, not chrome.
+
+## 10. What's intentionally NOT in the system
 
 - No filled buttons (only outlined)
 - No rounded corners anywhere (`--radius: 0`)

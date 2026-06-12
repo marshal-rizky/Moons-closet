@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { formatPrice } from "@/lib/config";
 import { AddToCartButton } from "@/components/store/add-to-cart-button";
 import { ProductGallery } from "@/components/store/product-gallery";
+import { ColorSwatches } from "@/components/store/color-swatches";
+import { effectiveImages, hasVariants, resolveSelectedVariant } from "@/lib/variants";
 import type { Product } from "@/lib/types";
 
 const CATEGORY_LABEL: Record<string, string> = {
@@ -14,10 +16,13 @@ const CATEGORY_LABEL: Record<string, string> = {
 
 export default async function ProductPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ color?: string }>;
 }) {
   const { slug } = await params;
+  const { color } = await searchParams;
   const supabase = await createClient();
 
   const { data: product } = await supabase
@@ -32,6 +37,8 @@ export default async function ProductPage({
   const p = product as Product;
   const sku = p.id.slice(0, 8).toUpperCase();
   const catLabel = CATEGORY_LABEL[p.category] || p.category;
+  const variant = resolveSelectedVariant(p, color);
+  const images = effectiveImages(p, variant);
 
   return (
     <div>
@@ -52,7 +59,7 @@ export default async function ProductPage({
       <div className="grid grid-cols-1 gap-0 px-4 pt-6 pb-20 sm:px-12 lg:grid-cols-[1fr_360px] lg:gap-12 lg:pt-10">
         {/* Image stack (scrolls) */}
         <div>
-          <ProductGallery images={p.images} name={p.name} />
+          <ProductGallery images={images} name={p.name} />
         </div>
 
         {/* Sticky info column */}
@@ -69,7 +76,11 @@ export default async function ProductPage({
               </p>
             </div>
 
-            <AddToCartButton product={p} />
+            {variant && (
+              <ColorSwatches slug={p.slug} variants={p.variants} selected={variant} />
+            )}
+
+            <AddToCartButton product={p} selectedVariant={variant} />
 
             {p.description && (
               <div className="border-t border-foreground/10 pt-5">
@@ -88,6 +99,9 @@ export default async function ProductPage({
                 <div className="mt-3 space-y-1 normal-case tracking-normal text-[12px] opacity-80">
                   <p>Kategori: {catLabel}</p>
                   <p>Ukuran tersedia: {(p.sizes as string[]).join(", ")}</p>
+                  {hasVariants(p) && (
+                    <p>Warna tersedia: {p.variants.map((v) => v.color).join(", ")}</p>
+                  )}
                 </div>
               </details>
               <details className="group border-b border-foreground/10 py-3">

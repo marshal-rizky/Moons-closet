@@ -56,13 +56,14 @@ export function CartItem({ item }: { item: CartItemType }) {
             <h3 className="text-[12px] tracking-[0.06em] uppercase">{item.name}</h3>
             <p className="mt-1 text-[11px] tracking-[0.08em] uppercase opacity-70">
               Ukuran {item.size}
+              {item.color && <> · {item.color}</>}
             </p>
             <p className="mt-2 text-[12px] tracking-[0.04em] uppercase tabular-nums">
               {formatPrice(item.price * item.quantity)}
             </p>
           </div>
           <button
-            onClick={() => removeItem(item.product_id, item.size)}
+            onClick={() => removeItem(item.product_id, item.size, item.color ?? null)}
             className="text-[11px] tracking-[0.08em] uppercase underline underline-offset-[4px] opacity-60 hover:opacity-100"
           >
             Hapus
@@ -71,7 +72,7 @@ export function CartItem({ item }: { item: CartItemType }) {
 
         <div className="mt-4 flex items-center gap-3">
           <button
-            onClick={() => updateQuantity(item.product_id, item.size, item.quantity - 1)}
+            onClick={() => updateQuantity(item.product_id, item.size, item.color ?? null, item.quantity - 1)}
             aria-label="Kurangi"
             className="grid h-8 w-8 place-items-center border border-foreground/30 text-base leading-none hover:border-foreground"
           >
@@ -81,7 +82,7 @@ export function CartItem({ item }: { item: CartItemType }) {
             {item.quantity}
           </span>
           <button
-            onClick={() => updateQuantity(item.product_id, item.size, item.quantity + 1)}
+            onClick={() => updateQuantity(item.product_id, item.size, item.color ?? null, item.quantity + 1)}
             aria-label="Tambah"
             className="grid h-8 w-8 place-items-center border border-foreground/30 text-base leading-none hover:border-foreground"
           >

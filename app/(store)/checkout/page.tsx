@@ -41,6 +41,7 @@ export default function CheckoutPage() {
           items: items.map((i) => ({
             product_id: i.product_id,
             size: i.size,
+            color: i.color ?? null,
             quantity: i.quantity,
           })),
         }),
@@ -145,13 +146,14 @@ export default function CheckoutPage() {
             <div className="mt-5 space-y-2 text-[12px] tracking-[0.04em] uppercase">
               {items.map((item) => (
                 <div
-                  key={`${item.product_id}-${item.size}`}
+                  key={`${item.product_id}-${item.size}-${item.color ?? ""}`}
                   className="flex items-start justify-between gap-3"
                 >
                   <span className="min-w-0 flex-1">
                     {item.name}{" "}
                     <span className="opacity-60">
-                      / {item.size} / x{item.quantity}
+                      / {item.size}
+                      {item.color && <> / {item.color}</>} / x{item.quantity}
                     </span>
                   </span>
                   <span className="tabular-nums">{formatPrice(item.price * item.quantity)}</span>

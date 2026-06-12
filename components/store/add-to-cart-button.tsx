@@ -3,16 +3,23 @@
 import { useState } from "react";
 import { useCart } from "@/lib/cart-context";
 import { useToast } from "@/lib/toast-context";
-import type { Product } from "@/lib/types";
+import type { Product, ProductVariant } from "@/lib/types";
 
-export function AddToCartButton({ product }: { product: Product }) {
+export function AddToCartButton({
+  product,
+  selectedVariant,
+}: {
+  product: Product;
+  selectedVariant: ProductVariant | null;
+}) {
   const { addItem } = useCart();
   const { toast } = useToast();
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [sizeError, setSizeError] = useState(false);
 
   const sizes = product.sizes as string[];
-  const outOfStock = product.stock <= 0;
+  const stock = selectedVariant ? selectedVariant.stock : product.stock;
+  const outOfStock = stock <= 0;
 
   function handleAdd() {
     if (outOfStock) return;
@@ -25,9 +32,10 @@ export function AddToCartButton({ product }: { product: Product }) {
       product_id: product.id,
       name: product.name,
       size: selectedSize,
+      color: selectedVariant?.color ?? null,
       quantity: 1,
       price: product.price,
-      image: product.images[0] || null,
+      image: (selectedVariant ? selectedVariant.images[0] : product.images[0]) || null,
       slug: product.slug,
     });
     toast.success("Ditambahkan ke tas");
@@ -75,9 +83,9 @@ export function AddToCartButton({ product }: { product: Product }) {
       {outOfStock && (
         <p className="text-[11px] tracking-[0.08em] uppercase text-destructive">Stok habis</p>
       )}
-      {!outOfStock && product.stock <= 5 && (
+      {!outOfStock && stock <= 5 && (
         <p className="text-[11px] tracking-[0.08em] uppercase opacity-70">
-          Sisa {product.stock} stok
+          Sisa {stock} stok
         </p>
       )}
 

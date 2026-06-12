@@ -32,7 +32,7 @@ export async function sendAdminOrderAlert(order: Order) {
             .map(
               (item) => `
             <tr style="border-bottom: 1px solid #eee;">
-              <td style="padding: 8px 0;">${item.name} (${item.size}) &times; ${item.quantity}</td>
+              <td style="padding: 8px 0;">${item.name} (${item.size}${item.color ? ` / ${item.color}` : ""}) &times; ${item.quantity}</td>
               <td style="padding: 8px 0; text-align: right;">${formatPrice(item.price * item.quantity)}</td>
             </tr>`
             )
@@ -70,7 +70,7 @@ export async function sendCustomerConfirmationNotification(order: Order) {
             .map(
               (item) => `
             <tr style="border-bottom: 1px solid #eee;">
-              <td style="padding: 8px 0;">${item.name} (${item.size}) &times; ${item.quantity}</td>
+              <td style="padding: 8px 0;">${item.name} (${item.size}${item.color ? ` / ${item.color}` : ""}) &times; ${item.quantity}</td>
               <td style="padding: 8px 0; text-align: right;">${formatPrice(item.price * item.quantity)}</td>
             </tr>`
             )
@@ -108,7 +108,7 @@ export async function sendCustomerShippingNotification(order: Order) {
             .map(
               (item) => `
             <tr style="border-bottom: 1px solid #eee;">
-              <td style="padding: 8px 0;">${item.name} (${item.size}) &times; ${item.quantity}</td>
+              <td style="padding: 8px 0;">${item.name} (${item.size}${item.color ? ` / ${item.color}` : ""}) &times; ${item.quantity}</td>
               <td style="padding: 8px 0; text-align: right;">${formatPrice(item.price * item.quantity)}</td>
             </tr>`
             )

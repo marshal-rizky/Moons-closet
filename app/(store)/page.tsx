@@ -1,7 +1,9 @@
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { siteConfig } from "@/lib/config";
 import { ProductCard } from "@/components/store/product-card";
+import { MoonDivider } from "@/components/store/moon-divider";
 import { FadeIn } from "@/components/ui/fade-in";
 import type { Product } from "@/lib/types";
 
@@ -44,8 +46,16 @@ export default async function HomePage() {
               <div className="absolute inset-0 grid place-items-center">
                 <FadeIn>
                   <div className="text-center text-background mix-blend-difference">
-                    <p className="text-[11px] tracking-[0.18em] uppercase">
-                      {siteConfig.name} <span className="font-heading italic ml-1">presents</span>
+                    <Image
+                      src="/brand/logo-white.png"
+                      alt={siteConfig.name}
+                      width={1021}
+                      height={459}
+                      priority
+                      className="mx-auto h-10 w-auto sm:h-14"
+                    />
+                    <p className="mt-3 text-[11px] tracking-[0.18em] uppercase">
+                      <span className="font-heading italic">presents</span>
                     </p>
                     <h1 className="mt-4 font-heading text-6xl leading-[0.95] tracking-[0.04em] uppercase sm:text-[120px] sm:leading-[0.9]">
                       Koleksi
@@ -157,6 +167,8 @@ export default async function HomePage() {
           </FadeIn>
         </div>
       </section>
+
+      <MoonDivider />
 
       {/* Latest products */}
       {rest.length > 0 && (

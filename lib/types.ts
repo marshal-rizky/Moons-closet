@@ -1,3 +1,10 @@
+export type ProductVariant = {
+  color: string;
+  hex: string;
+  images: string[];
+  stock: number;
+};
+
 export type Product = {
   id: string;
   name: string;
@@ -8,6 +15,7 @@ export type Product = {
   category: string;
   sizes: string[];
   stock: number;
+  variants: ProductVariant[];
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -17,6 +25,7 @@ export type OrderItem = {
   product_id: string;
   name: string;
   size: string;
+  color: string | null;
   quantity: number;
   price: number;
   image: string | null;
@@ -41,6 +50,7 @@ export type CartItem = {
   product_id: string;
   name: string;
   size: string;
+  color: string | null;
   quantity: number;
   price: number;
   image: string | null;

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCart } from "@/lib/cart-context";
@@ -47,12 +48,20 @@ export function Navbar() {
             <span aria-hidden className="block h-px w-6 bg-foreground" />
           </button>
 
-          {/* Center: wordmark (mobile only) */}
+          {/* Center: logo wordmark */}
           <Link
             href="/"
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-heading text-lg tracking-[0.15em] uppercase whitespace-nowrap sm:hidden"
+            aria-label={siteConfig.name}
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
           >
-            {siteConfig.name}
+            <Image
+              src="/brand/logo-black-nav.png"
+              alt={siteConfig.name}
+              width={720}
+              height={324}
+              priority
+              className="h-7 w-auto sm:h-8"
+            />
           </Link>
 
           {/* Right: account links */}
@@ -114,9 +123,16 @@ export function Navbar() {
               <Link
                 href="/"
                 onClick={() => setMenuOpen(false)}
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-heading text-xl tracking-[0.15em] uppercase whitespace-nowrap"
+                aria-label={siteConfig.name}
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
               >
-                {siteConfig.name}
+                <Image
+                  src="/brand/logo-black-nav.png"
+                  alt={siteConfig.name}
+                  width={720}
+                  height={324}
+                  className="h-7 w-auto sm:h-8"
+                />
               </Link>
               <Link
                 href="/cart"

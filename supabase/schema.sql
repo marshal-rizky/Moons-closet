@@ -9,6 +9,9 @@ CREATE TABLE products (
   category TEXT NOT NULL DEFAULT '',
   sizes JSONB DEFAULT '[]'::jsonb,
   stock INTEGER NOT NULL DEFAULT 0,
+  -- color variants: [{color, hex, images, stock}]; empty = single-color product,
+  -- non-empty = products.stock is derived (sum of variant stocks)
+  variants JSONB DEFAULT '[]'::jsonb,
   is_active BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()

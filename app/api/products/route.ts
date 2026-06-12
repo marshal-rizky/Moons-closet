@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { validateVariants, sumVariantStock } from "@/lib/validate-variants";
+import type { ProductVariant } from "@/lib/types";
 
 function slugify(text: string): string {
   return text
@@ -101,6 +103,14 @@ export async function POST(request: Request) {
     }
   }
 
+  // variants — optional array of {color, hex, images, stock}
+  let variants: ProductVariant[] = [];
+  if (raw.variants !== undefined) {
+    const result = validateVariants(raw.variants);
+    errors.push(...result.errors);
+    variants = result.variants;
+  }
+
   if (errors.length > 0) {
     return NextResponse.json({ error: "Validasi gagal", details: errors }, { status: 400 });
   }
@@ -112,9 +122,11 @@ export async function POST(request: Request) {
     price: raw.price,
     category,
     sizes,
-    stock: raw.stock,
+    // with variants, total stock is derived from per-color stocks
+    stock: variants.length > 0 ? sumVariantStock(variants) : raw.stock,
     images,
     slug,
+    variants,
   };
   if (description !== undefined) insertPayload.description = description;
 

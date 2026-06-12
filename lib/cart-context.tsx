@@ -6,12 +6,16 @@ import type { CartItem } from "@/lib/types";
 type CartContextType = {
   items: CartItem[];
   addItem: (item: CartItem) => void;
-  removeItem: (productId: string, size: string) => void;
-  updateQuantity: (productId: string, size: string, quantity: number) => void;
+  removeItem: (productId: string, size: string, color: string | null) => void;
+  updateQuantity: (productId: string, size: string, color: string | null, quantity: number) => void;
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
 };
+
+function sameLine(i: CartItem, productId: string, size: string, color: string | null) {
+  return i.product_id === productId && i.size === size && (i.color ?? null) === color;
+}
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
@@ -22,7 +26,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (typeof window === "undefined") return [];
     try {
       const stored = localStorage.getItem(CART_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
+      if (!stored) return [];
+      // normalize carts saved before color variants existed
+      return (JSON.parse(stored) as CartItem[]).map((i) => ({ ...i, color: i.color ?? null }));
     } catch { return []; }
   });
   const [mounted] = useState(() => typeof window !== "undefined");
@@ -35,12 +41,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addItem = useCallback((newItem: CartItem) => {
     setItems((prev) => {
-      const existing = prev.find(
-        (i) => i.product_id === newItem.product_id && i.size === newItem.size
+      const existing = prev.find((i) =>
+        sameLine(i, newItem.product_id, newItem.size, newItem.color ?? null)
       );
       if (existing) {
         return prev.map((i) =>
-          i.product_id === newItem.product_id && i.size === newItem.size
+          sameLine(i, newItem.product_id, newItem.size, newItem.color ?? null)
             ? { ...i, quantity: i.quantity + newItem.quantity }
             : i
         );
@@ -49,23 +55,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const removeItem = useCallback((productId: string, size: string) => {
-    setItems((prev) =>
-      prev.filter((i) => !(i.product_id === productId && i.size === size))
-    );
+  const removeItem = useCallback((productId: string, size: string, color: string | null) => {
+    setItems((prev) => prev.filter((i) => !sameLine(i, productId, size, color)));
   }, []);
 
   const updateQuantity = useCallback(
-    (productId: string, size: string, quantity: number) => {
+    (productId: string, size: string, color: string | null, quantity: number) => {
       if (quantity <= 0) {
-        removeItem(productId, size);
+        removeItem(productId, size, color);
         return;
       }
       setItems((prev) =>
         prev.map((i) =>
-          i.product_id === productId && i.size === size
-            ? { ...i, quantity }
-            : i
+          sameLine(i, productId, size, color) ? { ...i, quantity } : i
         )
       );
     },

@@ -57,9 +57,9 @@ export function ProductList({ products, categories }: { products: Product[]; cat
         {filtered.map((product) => (
           <div key={product.id} className="flex items-center gap-3 border-b border-border px-3 py-3 last:border-0 sm:gap-4 sm:px-4">
             <div className="h-12 w-12 shrink-0 overflow-hidden bg-secondary/30">
-              {product.images.length > 0 ? (
+              {(product.variants?.[0]?.images[0] || product.images[0]) ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={product.images[0]} alt="" className="h-full w-full object-cover" />
+                <img src={product.variants?.[0]?.images[0] || product.images[0]} alt="" className="h-full w-full object-cover" />
               ) : (
                 <PlaceholderImage className="h-full w-full" />
               )}
@@ -68,6 +68,9 @@ export function ProductList({ products, categories }: { products: Product[]; cat
               <p className="text-sm font-medium">{product.name}</p>
               <p className="text-xs text-muted-foreground">
                 {formatPrice(product.price)} — Stok: {product.stock}
+                {(product.variants?.length ?? 0) > 0 && (
+                  <span className="ml-1">· {product.variants.length} warna</span>
+                )}
                 {product.stock === 0 && <span className="ml-1 text-destructive">Habis</span>}
               </p>
             </div>

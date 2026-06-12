@@ -46,7 +46,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0">
             <div className="text-sm">
               <span className="font-medium">{item.name}</span>
-              <span className="text-muted-foreground"> — {item.size} &times; {item.quantity}</span>
+              <span className="text-muted-foreground"> — {item.size}{item.color ? ` / ${item.color}` : ""} &times; {item.quantity}</span>
             </div>
             <span className="text-sm">{formatPrice(item.price * item.quantity)}</span>
           </div>

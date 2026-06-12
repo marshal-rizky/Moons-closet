@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { validateVariants, sumVariantStock } from "@/lib/validate-variants";
 
 function slugify(text: string): string {
   return text
@@ -119,6 +120,18 @@ export async function PUT(
       errors.push("description harus berupa string");
     } else {
       updatePayload.description = raw.description;
+    }
+  }
+
+  // variants — optional; non-empty variants derive total stock
+  if (raw.variants !== undefined) {
+    const result = validateVariants(raw.variants);
+    errors.push(...result.errors);
+    if (result.errors.length === 0) {
+      updatePayload.variants = result.variants;
+      if (result.variants.length > 0) {
+        updatePayload.stock = sumVariantStock(result.variants);
+      }
     }
   }
 

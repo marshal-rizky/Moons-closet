@@ -3,14 +3,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Upload, X } from "lucide-react";
+import { Plus, Trash2, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type { Product } from "@/lib/types";
+import type { Product, ProductVariant } from "@/lib/types";
 
 const ALL_SIZES = ["S", "M", "L", "XL", "XXL"];
+
+const EMPTY_VARIANT: ProductVariant = { color: "", hex: "#1a1a1a", images: [], stock: 0 };
 
 type ProductFormProps = { product?: Product };
 
@@ -25,9 +27,50 @@ export function ProductForm({ product }: ProductFormProps) {
   const [stock, setStock] = useState(product?.stock?.toString() || "0");
   const [description, setDescription] = useState(product?.description || "");
   const [images, setImages] = useState<string[]>((product?.images as string[]) || []);
+  const [variants, setVariants] = useState<ProductVariant[]>(product?.variants ?? []);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  const hasVariants = variants.length > 0;
+  const variantStockTotal = variants.reduce((sum, v) => sum + (v.stock || 0), 0);
+
+  function updateVariant(index: number, patch: Partial<ProductVariant>) {
+    setVariants((prev) => prev.map((v, i) => (i === index ? { ...v, ...patch } : v)));
+  }
+
+  async function uploadFiles(files: FileList): Promise<string[]> {
+    const urls: string[] = [];
+    for (const file of Array.from(files)) {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Gagal upload foto.");
+        break;
+      }
+      urls.push(data.url);
+    }
+    return urls;
+  }
+
+  async function handleVariantUpload(index: number, e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files?.length) return;
+    if (variants[index].images.length + files.length > 5) {
+      setError("Maksimal 5 foto per varian.");
+      return;
+    }
+    setUploading(true);
+    setError("");
+    const urls = await uploadFiles(files);
+    setVariants((prev) =>
+      prev.map((v, i) => (i === index ? { ...v, images: [...v.images, ...urls] } : v))
+    );
+    setUploading(false);
+    e.target.value = "";
+  }
 
   function toggleSize(size: string) {
     setSizes((prev) => prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]);
@@ -40,15 +83,8 @@ export function ProductForm({ product }: ProductFormProps) {
 
     setUploading(true);
     setError("");
-
-    for (const file of Array.from(files)) {
-      const formData = new FormData();
-      formData.append("file", file);
-      const res = await fetch("/api/upload", { method: "POST", body: formData });
-      const data = await res.json();
-      if (!res.ok) { setError(data.error || "Gagal upload foto."); break; }
-      setImages((prev) => [...prev, data.url]);
-    }
+    const urls = await uploadFiles(files);
+    setImages((prev) => [...prev, ...urls]);
     setUploading(false);
     e.target.value = "";
   }
@@ -62,7 +98,16 @@ export function ProductForm({ product }: ProductFormProps) {
     setSaving(true);
     setError("");
 
-    const body = { name, price: parseInt(price), category, sizes, stock: parseInt(stock), description, images };
+    const body = {
+      name,
+      price: parseInt(price),
+      category,
+      sizes,
+      stock: hasVariants ? variantStockTotal : parseInt(stock),
+      description,
+      images,
+      variants: variants.map((v) => ({ ...v, color: v.color.trim(), stock: Number(v.stock) || 0 })),
+    };
     const url = isEditing ? `/api/products/${product.id}` : "/api/products";
     const method = isEditing ? "PUT" : "POST";
 
@@ -106,10 +151,113 @@ export function ProductForm({ product }: ProductFormProps) {
       </div>
       <div className="space-y-2">
         <Label htmlFor="stock">Stok *</Label>
-        <Input id="stock" type="number" value={stock} onChange={(e) => setStock(e.target.value)} required min="0" />
+        {hasVariants ? (
+          <p className="border border-border rounded-sm px-3 py-2 text-sm text-muted-foreground">
+            {variantStockTotal} — dihitung dari varian warna
+          </p>
+        ) : (
+          <Input id="stock" type="number" value={stock} onChange={(e) => setStock(e.target.value)} required min="0" />
+        )}
       </div>
+
       <div className="space-y-2">
-        <Label>Foto Produk (max 5)</Label>
+        <div className="flex items-center justify-between">
+          <Label>Varian Warna</Label>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setVariants((prev) => [...prev, { ...EMPTY_VARIANT }])}
+          >
+            <Plus className="mr-1 h-3 w-3" /> Tambah Varian
+          </Button>
+        </div>
+        {hasVariants && (
+          <div className="space-y-3">
+            {variants.map((v, i) => (
+              <div key={i} className="space-y-3 border border-border rounded-sm p-3">
+                <div className="flex items-end gap-2">
+                  <div className="flex-1 space-y-1">
+                    <Label htmlFor={`variant-color-${i}`} className="text-xs">Nama Warna *</Label>
+                    <Input
+                      id={`variant-color-${i}`}
+                      value={v.color}
+                      onChange={(e) => updateVariant(i, { color: e.target.value })}
+                      placeholder="Hitam, Mocha, dll."
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor={`variant-hex-${i}`} className="text-xs">Warna</Label>
+                    <input
+                      id={`variant-hex-${i}`}
+                      type="color"
+                      value={v.hex}
+                      onChange={(e) => updateVariant(i, { hex: e.target.value })}
+                      className="block h-9 w-12 cursor-pointer border border-border bg-transparent p-0.5"
+                    />
+                  </div>
+                  <div className="w-24 space-y-1">
+                    <Label htmlFor={`variant-stock-${i}`} className="text-xs">Stok</Label>
+                    <Input
+                      id={`variant-stock-${i}`}
+                      type="number"
+                      min="0"
+                      value={v.stock}
+                      onChange={(e) => updateVariant(i, { stock: parseInt(e.target.value) || 0 })}
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    aria-label={`Hapus varian ${v.color || i + 1}`}
+                    onClick={() => setVariants((prev) => prev.filter((_, j) => j !== i))}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  {v.images.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {v.images.map((img, j) => (
+                        <div key={j} className="relative h-16 w-16 border border-border">
+                          <img src={img} alt="" className="h-full w-full object-cover" />
+                          <button
+                            type="button"
+                            aria-label="Hapus foto"
+                            onClick={() =>
+                              updateVariant(i, { images: v.images.filter((_, k) => k !== j) })
+                            }
+                            className="absolute -right-1 -top-1 rounded-full bg-destructive p-0.5 text-white"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <label className="flex cursor-pointer items-center justify-center gap-2 border border-dashed border-border rounded-sm px-3 py-3 text-xs text-muted-foreground hover:border-foreground transition-colors">
+                    <Upload className="h-3 w-3" />
+                    {uploading ? "Mengupload…" : `Foto ${v.color || "varian"} (max 5)`}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      multiple
+                      onChange={(e) => handleVariantUpload(i, e)}
+                      className="hidden"
+                      disabled={uploading}
+                    />
+                  </label>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label>Foto Produk {hasVariants ? "(opsional — fallback)" : "(max 5)"}</Label>
         {images.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-2">
             {images.map((img, i) => (
