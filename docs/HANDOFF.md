@@ -1,7 +1,7 @@
 # Clothing Store Website — Handoff Document
 
-**Date:** 2026-05-15
-**Status:** 14/14 tasks complete — DEPLOYED
+**Date:** 2026-05-17 (last updated)
+**Status:** Part 1 + Part 2 complete — DEPLOYED & E2E TESTED
 **Branch:** master
 **Production URL:** https://clothing-website-beryl.vercel.app
 
@@ -17,25 +17,37 @@
 - **Checkout** (`/checkout`) — Form (name, WhatsApp, address, notes) → server-side validated → success state
 - **Contact** (`/contact`) — WhatsApp link, email, address (all from env vars)
 - **Navbar** — Sticky header, desktop nav links, cart badge with item count, mobile hamburger (Sheet)
-- **Footer** — 3-column: store info, quick links, contact details
+- **Footer** — 3-column: store info, quick links, contact details (contact page only)
+- **Back to Top** — Scroll-triggered floating button with smooth scroll
 - **404 Page** — Branded not-found page in Indonesian
+- **Animations** — FadeIn on scroll (hero, categories, products, cart), spring-animated cart badge, crossfade product gallery, staggered order timeline
+- **Toast System** — Global toast notifications (success/error) via React Context, auto-dismiss 3s, max 3 visible
+- **Skeleton Loading** — Shimmer skeleton cards while products load
 
 ### Admin Panel (`/admin/*`) — Auth-Protected
 - **Login** (`/admin/login`) — Supabase email/password auth
 - **Dashboard** (`/admin`) — Stats cards (pending orders, total products, monthly revenue) + recent orders table
-- **Products** (`/admin/products`) — List with thumbnails, price, stock, active/inactive toggle
+- **Products** (`/admin/products`) — List with search bar + category filter pills, thumbnails, price, stock, active/inactive toggle
 - **New Product** (`/admin/products/new`) — Full form: name, description, price, category, sizes, stock, multi-image upload
 - **Edit Product** (`/admin/products/[id]/edit`) — Same form pre-filled, soft delete option
 - **Orders** (`/admin/orders`) — Orders list with status badges, customer info
-- **Order Detail** (`/admin/orders/[id]`) — Full order info, items list, status updater (pending → confirmed → shipped → done)
+- **Order Detail** (`/admin/orders/[id]`) — Full order info, items list, status updater (pending → confirmed → shipped → done), animated timeline
+
+### Email Notifications (Resend)
+- **Admin Order Alert** — Sent to store owner on every new order (items, total, customer info)
+- **Customer Confirmation** — Sent when admin changes status to "confirmed"
+- **Customer Shipping** — Sent when admin changes status to "shipped"
+- **Sender:** `onboarding@resend.dev` (sandbox) — upgrade to custom domain for production
+- **Implementation:** All emails are `await`ed to prevent serverless function early termination
 
 ### API Routes
-- `POST /api/orders` — Create order (server-side price recalculation, validates stock/sizes/active status)
-- `PATCH /api/orders/[id]` — Update order status
+- `POST /api/orders` — Create order (server-side price recalculation, validates stock/sizes/active status, sends admin email)
+- `PATCH /api/orders/[id]` — Update order status (sends confirmation/shipping email to customer)
 - `POST /api/products` — Create product (field whitelist, slug generation with collision handling)
 - `PUT /api/products/[id]` — Update product (validated, slug regeneration on name change)
 - `DELETE /api/products/[id]` — Soft delete (sets is_active=false)
 - `POST /api/upload` — Image upload to Supabase Storage (validates type/size)
+- `GET /api/test-email` — Diagnostic endpoint (sends test email, returns env var status) — **remove before production**
 
 ### Infrastructure & Security
 - Supabase clients: browser, server (SSR cookies), admin (service role)
@@ -65,8 +77,10 @@
 - `NEXT_PUBLIC_STORE_NAME`
 - `NEXT_PUBLIC_STORE_TAGLINE`
 - `NEXT_PUBLIC_STORE_WHATSAPP`
-- `NEXT_PUBLIC_STORE_EMAIL`
+- `NEXT_PUBLIC_STORE_EMAIL` — also used as admin alert recipient
 - `NEXT_PUBLIC_STORE_ADDRESS`
+- `RESEND_API_KEY` — Resend API key for transactional emails
+- `RESEND_FROM_EMAIL` — (optional) defaults to `onboarding@resend.dev`
 
 ### To Update Branding
 Change env vars in [Vercel Dashboard → Settings → Environment Variables](https://vercel.com/marshal-rizkys-projects/clothing-website/settings/environment-variables), then redeploy.
@@ -92,6 +106,8 @@ npm run dev
 - **Framework:** Next.js 16.2.6 (App Router, Turbopack)
 - **Styling:** Tailwind CSS v4 + shadcn/ui (Base UI)
 - **Database:** Supabase (PostgreSQL + Auth + Storage)
+- **Email:** Resend (transactional emails)
+- **Animations:** Framer Motion (FadeIn, AnimatePresence, motion.div/span)
 - **Fonts:** Cormorant (headings) + Montserrat (body)
 - **Language:** Bahasa Indonesia
 - **Currency:** IDR (Rupiah)
@@ -107,13 +123,24 @@ npm run dev
 - Products use soft delete (`is_active` flag)
 - JSONB columns for flexibility (images array, sizes array, order items)
 
-## Future Plans
-- Delivery integration (JNE, GoSend, GrabExpress) — architecture kept malleable for this
+## Completed (Part 2)
+- ~~Stock decrement on order creation~~ ✅
+- ~~Email notifications (admin + customer)~~ ✅ (Resend)
+- ~~Framer Motion animations~~ ✅
+- ~~Search + category filters~~ ✅ (storefront + admin)
+- ~~Toast notification system~~ ✅
+- ~~Skeleton loading states~~ ✅
+- ~~Back to Top button~~ ✅
+- ~~Order timeline visualization~~ ✅
+
+## Remaining / Future
+- **Custom email domain** — verify domain in Resend to send to any email (currently sandbox: only delivers to account owner)
+- **Remove `/api/test-email`** — diagnostic endpoint, delete before going live
+- **Real store branding** — replace "Nama Toko" defaults with actual store name, tagline, WhatsApp, address in env vars
+- **Real product photos** — replace placeholder SVGs with actual product images
+- Delivery integration (JNE, GoSend, GrabExpress) — architecture kept malleable
 - Payment gateway integration (Midtrans/Xendit)
 - WhatsApp notification on new orders
-- Real product photos to replace placeholder images
-- Store name and branding finalization
-- Stock decrement on order creation/confirmation
 
 ---
 
@@ -138,8 +165,9 @@ app/
 │       ├── products/     # Product CRUD
 │       └── orders/       # Order management
 ├── api/                  # API routes
-│   ├── orders/           # Order endpoints
+│   ├── orders/           # Order endpoints (+ email triggers)
 │   ├── products/         # Product endpoints
+│   ├── test-email/       # Email diagnostic (remove before prod)
 │   └── upload/           # Image upload
 ├── layout.tsx            # Root layout
 ├── not-found.tsx         # Custom 404
@@ -147,13 +175,22 @@ app/
 
 components/
 ├── admin/                # Admin-specific components
+│   └── order-timeline.tsx  # Animated 4-step order timeline
 ├── store/                # Store-specific components
+│   ├── shop-toolbar.tsx    # Search + category filter pills
+│   ├── product-gallery.tsx # Image gallery with crossfade
+│   └── product-card-skeleton.tsx # Shimmer skeleton
 ├── ui/                   # shadcn/ui primitives
-└── providers.tsx         # Context providers
+│   ├── fade-in.tsx         # FadeIn scroll animation wrapper
+│   ├── back-to-top.tsx     # Scroll-to-top button
+│   └── toast.tsx           # Toast notification container
+└── providers.tsx         # Context providers (Cart + Toast)
 
 lib/
 ├── supabase/             # Supabase clients + middleware helper
 ├── cart-context.tsx      # Cart state management
+├── toast-context.tsx     # Toast notification state
+├── email.ts              # Resend email functions (admin alert, confirmation, shipping)
 ├── config.ts             # Site config from env vars
 ├── types.ts              # TypeScript types
 └── utils.ts              # cn() utility
@@ -169,6 +206,48 @@ supabase/
 ---
 
 ## Reference Docs
+
+### Implementation Docs
 - **Design Spec:** `docs/superpowers/specs/2026-05-15-clothing-store-design.md`
-- **Implementation Plan:** `docs/superpowers/plans/2026-05-15-clothing-store-plan.md`
-- **Readiness Audit:** `docs/READINESS_WORRIES.md` (most issues now resolved)
+- **Part 1 Plan:** `docs/superpowers/plans/2026-05-15-clothing-store-plan.md`
+- **Part 2 Plan:** `docs/superpowers/plans/2026-05-15-part2-implementation.md`
+- **Part 2 Design Spec:** `docs/superpowers/specs/2026-05-15-part2-design.md`
+
+### Business Planning Docs (for store owner)
+- **Delivery & Payment Guide:** `docs/delivery-and-payments-guide.html` — Thorough explanation of QRIS, payment gateways (Midtrans), couriers (JNE/J&T/SiCepat), RajaOngkir, free shipping strategy, complete order flow, money flow. Open in browser → Ctrl+P → Save as PDF.
+- **API Costs Reference:** `docs/biaya-api-lengkap.html` — Detailed cost breakdown for every paid service needed to go fully live (Midtrans, RajaOngkir, domain, email, optional Pro tiers). 3 budget scenarios + marketplace comparison. Open in browser → Ctrl+P → Save as PDF.
+
+---
+
+## Next Session Priorities
+
+### Phase 1: Go-Live Prep (Owner Tasks)
+1. **Buy domain** (Niagahoster/Cloudflare ~Rp 150-270rb/year)
+2. **Verify domain in Resend** — enables sending email to any address (currently sandbox-locked to account owner email)
+3. **Add domain to Vercel** → update DNS
+4. **Update branding env vars** on Vercel: real `NEXT_PUBLIC_STORE_NAME`, tagline, WhatsApp, address
+5. **Sign up Midtrans Sandbox** at dashboard.midtrans.com (free, approval for production takes 3-7 days)
+6. **Sign up RajaOngkir Starter** (free) at rajaongkir.com
+
+### Phase 2: Payment Integration (Dev Tasks)
+Per delivery-and-payments-guide.html section "Cara Kerja Pembayaran":
+- Add Midtrans columns to `orders` table: `payment_method`, `payment_status`, `midtrans_transaction_id`, `midtrans_snap_token`, `paid_at`
+- Create `/api/payments/create` endpoint (server creates Midtrans transaction, returns snap_token)
+- Create `/api/payments/webhook` endpoint (verify signature, update payment_status, restore stock on failure)
+- Update checkout flow: create order → open Snap popup → handle success/pending/error callbacks
+- Update admin order detail to show payment status
+- Add payment expiry handling
+
+### Phase 3: Delivery Integration (Dev Tasks)
+- Add columns to `orders`: `shipping_courier`, `shipping_service`, `shipping_cost`, `shipping_tracking_number`, `shipping_city_id`, `weight`
+- Add `weight` column to `products` (default 300g)
+- Create `/api/shipping/provinces`, `/api/shipping/cities`, `/api/shipping/cost` endpoints
+- Add province/city dropdowns + courier selection UI to checkout
+- Implement free shipping threshold (env var `FREE_SHIPPING_THRESHOLD`)
+- Add tracking number input field in admin order detail
+- Include tracking link in shipping email
+
+### Cleanup Before Launch
+- Delete `/api/test-email` route
+- Remove `console.log` debug statements from `lib/email.ts`
+- Set `RESEND_FROM_EMAIL=noreply@yourdomain.com` after domain verified

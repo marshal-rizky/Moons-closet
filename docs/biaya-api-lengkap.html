@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biaya API & Layanan — Toko Baju Online</title>
+<style>
+  @media print {
+    body { font-size: 11pt; }
+    .page-break { page-break-before: always; }
+    table { page-break-inside: avoid; }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.7;
+    color: #1a1a1a;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 20px;
+    background: #fff;
+  }
+  h1 {
+    font-size: 1.8em;
+    margin: 36px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid #1a1a1a;
+  }
+  h2 {
+    font-size: 1.3em;
+    margin: 28px 0 10px;
+    color: #2563eb;
+  }
+  h3 { font-size: 1.05em; margin: 20px 0 8px; }
+  p, li { margin-bottom: 6px; }
+  ul, ol { padding-left: 22px; margin-bottom: 14px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 0.9em;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #f3f4f6; font-weight: 600; }
+  tr:nth-child(even) { background: #f9fafb; }
+  strong { color: #111; }
+  hr { border: none; border-top: 1px solid #e5e7eb; margin: 28px 0; }
+  .title-block {
+    text-align: center;
+    padding: 40px 0 24px;
+    border-bottom: 3px solid #1a1a1a;
+    margin-bottom: 24px;
+  }
+  .title-block h1 { border: none; margin: 0; padding: 0; font-size: 1.9em; }
+  .title-block p { color: #666; margin-top: 6px; }
+  .box {
+    background: #eff6ff;
+    border-left: 4px solid #2563eb;
+    padding: 12px 16px;
+    margin: 14px 0;
+    border-radius: 0 8px 8px 0;
+  }
+  .warn {
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    padding: 12px 16px;
+    margin: 14px 0;
+    border-radius: 0 8px 8px 0;
+  }
+  .good {
+    background: #d1fae5;
+    border-left: 4px solid #10b981;
+    padding: 12px 16px;
+    margin: 14px 0;
+    border-radius: 0 8px 8px 0;
+  }
+  .price-tag {
+    display: inline-block;
+    background: #2563eb;
+    color: white;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: 600;
+  }
+  .price-free {
+    display: inline-block;
+    background: #10b981;
+    color: white;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <h1>Biaya API &amp; Layanan</h1>
+  <p><strong>Daftar Lengkap untuk Toko Baju Online</strong></p>
+  <p>Mei 2026 &mdash; Estimasi Biaya Bulanan + per Transaksi</p>
+</div>
+
+<!-- ====== RINGKASAN ====== -->
+<h1>Ringkasan Cepat</h1>
+<div class="box">
+  <strong>Total minimum untuk go-live lengkap:</strong><br>
+  &bull; Biaya tetap: <strong>~Rp 50.000/bulan</strong> (RajaOngkir)<br>
+  &bull; Biaya variabel: <strong>~1-2% dari setiap penjualan</strong> (payment gateway)<br>
+  &bull; Setup awal: <strong>Gratis</strong> (semua layanan punya tier gratis untuk mulai)
+</div>
+
+<h2>Status Saat Ini</h2>
+<table>
+  <tr><th>Sudah Aktif</th><th>Status</th><th>Biaya</th></tr>
+  <tr><td>Vercel (hosting)</td><td><span class="price-free">Aktif</span></td><td>Gratis</td></tr>
+  <tr><td>Supabase (database)</td><td><span class="price-free">Aktif</span></td><td>Gratis</td></tr>
+  <tr><td>Resend (email)</td><td><span class="price-free">Aktif</span></td><td>Gratis (sandbox)</td></tr>
+</table>
+
+<h2>Yang Belum Aktif</h2>
+<table>
+  <tr><th>Layanan</th><th>Fungsi</th><th>Biaya</th><th>Wajib?</th></tr>
+  <tr><td><strong>Midtrans</strong></td><td>Terima pembayaran online</td><td>0.7-2.9% per transaksi</td><td>Wajib</td></tr>
+  <tr><td><strong>RajaOngkir</strong></td><td>Cek ongkir otomatis</td><td>Rp 50.000/bulan</td><td>Sangat disarankan</td></tr>
+  <tr><td><strong>Domain Email</strong></td><td>Email dari nama toko sendiri</td><td>Rp 150-300rb/tahun</td><td>Disarankan</td></tr>
+  <tr><td><strong>Domain Website</strong></td><td>namatoko.com</td><td>Rp 150-300rb/tahun</td><td>Disarankan</td></tr>
+</table>
+
+<hr>
+
+<!-- ====== BAGIAN 1: WAJIB ====== -->
+<h1>Layanan WAJIB</h1>
+<p>Tanpa ini, toko tidak bisa terima pembayaran online.</p>
+
+<h2>1. Midtrans (Payment Gateway)</h2>
+<p><strong>Website:</strong> midtrans.com<br>
+<strong>Fungsi:</strong> Terima pembayaran QRIS, transfer bank, e-wallet, kartu kredit</p>
+
+<h3>Biaya</h3>
+<table>
+  <tr><th>Tipe Biaya</th><th>Nominal</th></tr>
+  <tr><td>Pendaftaran</td><td><span class="price-free">Gratis</span></td></tr>
+  <tr><td>Biaya bulanan</td><td><span class="price-free">Gratis</span></td></tr>
+  <tr><td>Setup</td><td><span class="price-free">Gratis</span></td></tr>
+  <tr><td>QRIS per transaksi</td><td><span class="price-tag">0.7%</span></td></tr>
+  <tr><td>Transfer Bank (VA) per transaksi</td><td><span class="price-tag">Rp 4.000 flat</span></td></tr>
+  <tr><td>E-Wallet (GoPay, ShopeePay) per transaksi</td><td><span class="price-tag">2%</span></td></tr>
+  <tr><td>Kartu Kredit per transaksi</td><td><span class="price-tag">2.9% + Rp 2.000</span></td></tr>
+  <tr><td>Minimarket (Alfamart/Indomaret)</td><td><span class="price-tag">Rp 5.000 flat</span></td></tr>
+  <tr><td>Paylater (Kredivo, Akulaku)</td><td><span class="price-tag">3.5-5%</span></td></tr>
+</table>
+
+<h3>Estimasi Biaya per Bulan</h3>
+<table>
+  <tr><th>Skenario</th><th>Pesanan/bulan</th><th>Avg. nilai</th><th>Total Penjualan</th><th>Estimasi Fee</th></tr>
+  <tr><td>Pemula</td><td>30</td><td>Rp 200rb</td><td>Rp 6 juta</td><td>~Rp 42.000</td></tr>
+  <tr><td>Menengah</td><td>100</td><td>Rp 250rb</td><td>Rp 25 juta</td><td>~Rp 175.000</td></tr>
+  <tr><td>Besar</td><td>500</td><td>Rp 300rb</td><td>Rp 150 juta</td><td>~Rp 1.050.000</td></tr>
+</table>
+<p><em>Asumsi: 70% QRIS, 20% VA, 10% E-wallet.</em></p>
+
+<div class="good"><strong>Kelebihan:</strong> Tidak ada biaya tetap. Bayar hanya kalau ada penjualan. Setup awal gratis 100%.</div>
+
+<hr class="page-break">
+
+<h2>2. RajaOngkir (Cek Ongkir)</h2>
+<p><strong>Website:</strong> rajaongkir.com<br>
+<strong>Fungsi:</strong> Hitung ongkir otomatis di checkout (JNE, J&amp;T, SiCepat, dll.)</p>
+
+<h3>Pilihan Paket</h3>
+<table>
+  <tr><th>Paket</th><th>Harga</th><th>Kurir</th><th>Cocok untuk</th></tr>
+  <tr><td><strong>Starter</strong></td><td><span class="price-free">Gratis</span></td><td>JNE, POS, TIKI</td><td>Test/MVP awal</td></tr>
+  <tr><td><strong>Basic</strong></td><td><span class="price-tag">Rp 50.000/bulan</span></td><td>+ J&amp;T, SiCepat, Anteraja, Wahana</td><td>Toko aktif (rekomendasi)</td></tr>
+  <tr><td><strong>Pro</strong></td><td><span class="price-tag">Rp 150.000/bulan</span></td><td>Semua + internasional</td><td>Toko besar/ekspor</td></tr>
+</table>
+
+<div class="box"><strong>Rekomendasi:</strong> Pakai <strong>Basic Rp 50rb/bulan</strong>. Tanpa J&amp;T dan SiCepat, banyak pembeli akan komplain.</div>
+
+<h3>Alternatif</h3>
+<table>
+  <tr><th>Layanan</th><th>Harga</th><th>Catatan</th></tr>
+  <tr><td>Biteship</td><td>Rp 0 + komisi per shipment</td><td>Alternatif modern, free tier ada</td></tr>
+  <tr><td>Komerce/Komship</td><td>Diskon ongkir + komisi</td><td>Untuk volume besar</td></tr>
+  <tr><td>API resmi kurir</td><td>Gratis tapi rumit</td><td>Setiap kurir harus integrasi sendiri</td></tr>
+</table>
+
+<hr>
+
+<!-- ====== BAGIAN 2: SANGAT DISARANKAN ====== -->
+<h1>Sangat Disarankan</h1>
+
+<h2>3. Domain Custom (.com / .id)</h2>
+<p><strong>Fungsi:</strong> Nama website kamu sendiri (contoh: namatoko.com)<br>
+<strong>Saat ini:</strong> clothing-website-beryl.vercel.app (subdomain Vercel)</p>
+
+<h3>Provider Domain</h3>
+<table>
+  <tr><th>Provider</th><th>.com</th><th>.id</th><th>.co.id</th><th>Catatan</th></tr>
+  <tr><td>Namecheap</td><td>~Rp 150rb/tahun</td><td>-</td><td>-</td><td>Murah, English</td></tr>
+  <tr><td>Cloudflare</td><td>~Rp 150rb/tahun</td><td>-</td><td>-</td><td>Termurah, harga kos</td></tr>
+  <tr><td>Niagahoster</td><td>~Rp 180rb/tahun</td><td>Rp 270rb/tahun</td><td>Rp 290rb/tahun</td><td>Indonesia, support lokal</td></tr>
+  <tr><td>IDwebhost</td><td>~Rp 200rb/tahun</td><td>Rp 250rb/tahun</td><td>Rp 290rb/tahun</td><td>Indonesia</td></tr>
+  <tr><td>Rumahweb</td><td>~Rp 180rb/tahun</td><td>Rp 250rb/tahun</td><td>Rp 290rb/tahun</td><td>Indonesia</td></tr>
+</table>
+
+<h3>Tipe Domain</h3>
+<table>
+  <tr><th>Ekstensi</th><th>Untuk Siapa</th><th>Syarat</th></tr>
+  <tr><td>.com</td><td>Umum, internasional</td><td>Tidak ada syarat</td></tr>
+  <tr><td>.id</td><td>Bisnis Indonesia, branding lokal</td><td>KTP pemilik</td></tr>
+  <tr><td>.co.id</td><td>Perusahaan terdaftar</td><td>NPWP + Akta + SIUP/NIB</td></tr>
+  <tr><td>.my.id</td><td>Personal/perorangan</td><td>KTP</td></tr>
+</table>
+
+<div class="box"><strong>Rekomendasi untuk toko baju:</strong> <strong>.com</strong> (murah, mudah, global) atau <strong>.id</strong> (lokal, branding Indonesia). Hindari .co.id kecuali sudah ada PT/CV.</div>
+
+<hr>
+
+<h2>4. Email Domain (untuk Resend)</h2>
+<p><strong>Saat ini:</strong> email dari <code>onboarding@resend.dev</code> (sandbox, hanya bisa kirim ke email pemilik akun Resend)<br>
+<strong>Setelah domain verified:</strong> email dari <code>noreply@namatoko.com</code> (bisa kirim ke siapa saja)</p>
+
+<h3>Biaya</h3>
+<table>
+  <tr><th>Item</th><th>Biaya</th><th>Catatan</th></tr>
+  <tr><td>Domain (sudah dibeli di atas)</td><td>-</td><td>Tidak perlu beli lagi</td></tr>
+  <tr><td>Resend Free tier</td><td><span class="price-free">Gratis</span></td><td>3.000 email/bulan, 1 domain</td></tr>
+  <tr><td>Resend Pro</td><td>Rp 300rb/bulan ($20)</td><td>50.000 email/bulan</td></tr>
+  <tr><td>Setup DNS</td><td><span class="price-free">Gratis</span></td><td>Edit DNS di provider domain</td></tr>
+</table>
+
+<div class="good"><strong>Kalau toko kecil-menengah:</strong> Free tier Resend (3.000 email/bulan) lebih dari cukup. 3.000 email = ~1.000 pesanan/bulan dengan 3 email per pesanan.</div>
+
+<hr class="page-break">
+
+<!-- ====== BAGIAN 3: OPSIONAL ====== -->
+<h1>Opsional (Saat Toko Sudah Ramai)</h1>
+
+<h2>5. Supabase Pro (Upgrade Database)</h2>
+<p><strong>Saat ini:</strong> Free tier</p>
+<table>
+  <tr><th>Free</th><th>Pro</th></tr>
+  <tr><td>500 MB database</td><td>8 GB database</td></tr>
+  <tr><td>1 GB storage (foto)</td><td>100 GB storage</td></tr>
+  <tr><td>2 GB bandwidth/bulan</td><td>50 GB bandwidth/bulan</td></tr>
+  <tr><td>Auto-pause 7 hari idle</td><td>Tidak pause</td></tr>
+  <tr><td><span class="price-free">Gratis</span></td><td><span class="price-tag">Rp 375rb/bulan ($25)</span></td></tr>
+</table>
+
+<div class="warn"><strong>Kapan upgrade:</strong> Saat foto produk &gt; 500MB total, atau pesanan sudah ratusan/bulan. Toko awal biasanya cukup pakai Free.</div>
+
+<hr>
+
+<h2>6. Vercel Pro (Upgrade Hosting)</h2>
+<p><strong>Saat ini:</strong> Hobby plan (gratis)</p>
+<table>
+  <tr><th>Hobby</th><th>Pro</th></tr>
+  <tr><td>100 GB bandwidth/bulan</td><td>1 TB bandwidth/bulan</td></tr>
+  <tr><td>Tidak untuk komersial*</td><td>Boleh komersial</td></tr>
+  <tr><td>Function timeout 10 detik</td><td>Function timeout 300 detik</td></tr>
+  <tr><td><span class="price-free">Gratis</span></td><td><span class="price-tag">Rp 300rb/bulan ($20)</span></td></tr>
+</table>
+
+<div class="warn"><strong>Penting:</strong> Vercel Hobby plan secara teknis tidak untuk komersial. Kalau toko sudah jalan untuk profit, secara teknis perlu upgrade ke Pro. Tapi banyak toko kecil tetap pakai Hobby tanpa masalah.</div>
+
+<hr>
+
+<h2>7. WhatsApp Business API (Notifikasi Otomatis)</h2>
+<p><strong>Fungsi:</strong> Kirim notifikasi pesanan ke pembeli via WhatsApp otomatis</p>
+
+<h3>Provider</h3>
+<table>
+  <tr><th>Provider</th><th>Setup</th><th>Per Pesan</th><th>Catatan</th></tr>
+  <tr><td>Fonnte</td><td>Rp 0 - 100rb</td><td>Rp 50-200</td><td>Indonesia, populer untuk UMKM</td></tr>
+  <tr><td>Wablas</td><td>Rp 0</td><td>Rp 80-200</td><td>Indonesia</td></tr>
+  <tr><td>Whacenter</td><td>Rp 0</td><td>Rp 50-150</td><td>Indonesia</td></tr>
+  <tr><td>WhatsApp Cloud API (Meta)</td><td>Gratis</td><td>Gratis 1.000 conv/bulan, lalu ~Rp 500/msg</td><td>Official Meta API</td></tr>
+</table>
+
+<div class="warn"><strong>Catatan:</strong> Provider seperti Fonnte/Wablas pakai metode unofficial (rentan banned WhatsApp). WhatsApp Cloud API official tapi lebih rumit setup.</div>
+
+<hr>
+
+<h2>8. Image Optimization (Cloudinary/Uploadcare)</h2>
+<p><strong>Fungsi:</strong> Otomatis compress + resize foto produk untuk loading lebih cepat<br>
+<strong>Saat ini:</strong> Pakai Supabase Storage (sudah cukup)</p>
+
+<table>
+  <tr><th>Layanan</th><th>Free Tier</th><th>Paid</th></tr>
+  <tr><td>Cloudinary</td><td>25 GB bandwidth, 25 GB storage</td><td>$89/bulan</td></tr>
+  <tr><td>Uploadcare</td><td>3 GB storage, 30 GB CDN</td><td>$30/bulan</td></tr>
+  <tr><td>Imgix</td><td>1.000 origin images</td><td>$10/bulan</td></tr>
+</table>
+
+<div class="good"><strong>Saran:</strong> Belum perlu. Supabase Storage + Next.js Image sudah cukup optimal untuk toko awal.</div>
+
+<hr class="page-break">
+
+<!-- ====== TOTAL BIAYA ====== -->
+<h1>Total Biaya Bulanan</h1>
+
+<h2>Skenario 1: Minimal (Baru Mulai)</h2>
+<table>
+  <tr><th>Layanan</th><th>Biaya</th></tr>
+  <tr><td>Vercel Hobby</td><td><span class="price-free">Gratis</span></td></tr>
+  <tr><td>Supabase Free</td><td><span class="price-free">Gratis</span></td></tr>
+  <tr><td>Resend Free</td><td><span class="price-free">Gratis</span></td></tr>
+  <tr><td>RajaOngkir Starter</td><td><span class="price-free">Gratis</span></td></tr>
+  <tr><td>Midtrans</td><td>~0.7% per transaksi</td></tr>
+  <tr><td>Domain .com (per bulan)</td><td>~Rp 13.000</td></tr>
+  <tr><th>Total tetap</th><th>~Rp 13.000/bulan</th></tr>
+  <tr><th>+ Variable</th><th>~0.7% dari penjualan</th></tr>
+</table>
+
+<h2>Skenario 2: Rekomendasi (Siap Komersial)</h2>
+<table>
+  <tr><th>Layanan</th><th>Biaya</th></tr>
+  <tr><td>Vercel Hobby</td><td><span class="price-free">Gratis</span></td></tr>
+  <tr><td>Supabase Free</td><td><span class="price-free">Gratis</span></td></tr>
+  <tr><td>Resend Free</td><td><span class="price-free">Gratis</span></td></tr>
+  <tr><td>RajaOngkir Basic</td><td>Rp 50.000</td></tr>
+  <tr><td>Midtrans</td><td>~1-1.5% per transaksi (mix)</td></tr>
+  <tr><td>Domain .com (per bulan)</td><td>~Rp 13.000</td></tr>
+  <tr><th>Total tetap</th><th>~Rp 63.000/bulan</th></tr>
+  <tr><th>+ Variable</th><th>~1-1.5% dari penjualan</th></tr>
+</table>
+
+<h2>Skenario 3: Toko Berkembang (100+ pesanan/bulan)</h2>
+<table>
+  <tr><th>Layanan</th><th>Biaya</th></tr>
+  <tr><td>Vercel Pro</td><td>Rp 300.000</td></tr>
+  <tr><td>Supabase Pro</td><td>Rp 375.000</td></tr>
+  <tr><td>Resend Pro</td><td>Rp 300.000</td></tr>
+  <tr><td>RajaOngkir Basic</td><td>Rp 50.000</td></tr>
+  <tr><td>WhatsApp notif (Fonnte)</td><td>~Rp 50.000 (300 msg)</td></tr>
+  <tr><td>Midtrans</td><td>~1-1.5% per transaksi</td></tr>
+  <tr><td>Domain .com (per bulan)</td><td>~Rp 13.000</td></tr>
+  <tr><th>Total tetap</th><th>~Rp 1.088.000/bulan</th></tr>
+  <tr><th>+ Variable</th><th>~1-1.5% dari penjualan</th></tr>
+</table>
+
+<hr>
+
+<!-- ====== PERBANDINGAN ====== -->
+<h1>Perbandingan dengan Marketplace</h1>
+<p>Kalau jualan via Shopee/Tokopedia, biaya seperti apa?</p>
+
+<h3>Shopee (per pesanan)</h3>
+<table>
+  <tr><th>Komponen</th><th>Persentase</th></tr>
+  <tr><td>Biaya admin Shopee (Standard)</td><td>2.5% - 6%</td></tr>
+  <tr><td>Biaya layanan (gratis ongkir)</td><td>~4%</td></tr>
+  <tr><td>Biaya kanal pembayaran</td><td>2%</td></tr>
+  <tr><th>Total</th><th>~8-12%</th></tr>
+</table>
+
+<h3>Tokopedia (per pesanan)</h3>
+<table>
+  <tr><th>Komponen</th><th>Persentase</th></tr>
+  <tr><td>Biaya layanan</td><td>1% - 5%</td></tr>
+  <tr><td>Biaya kanal pembayaran</td><td>0.5% - 2.9%</td></tr>
+  <tr><th>Total</th><th>~3-8%</th></tr>
+</table>
+
+<h3>Website Sendiri (kamu)</h3>
+<table>
+  <tr><th>Komponen</th><th>Persentase</th></tr>
+  <tr><td>Hosting + database + email</td><td>Rp 50rb/bulan tetap</td></tr>
+  <tr><td>Midtrans (mix QRIS+VA+e-wallet)</td><td>~1-1.5%</td></tr>
+  <tr><th>Total</th><th>~1-1.5%</th></tr>
+</table>
+
+<div class="good"><strong>Kesimpulan:</strong> Website sendiri jauh lebih hemat (1-1.5% vs 3-12%). Tapi marketplace dapat traffic gratis. Strategi terbaik: <strong>jual di keduanya</strong> &mdash; gunakan marketplace untuk traffic baru, website untuk pelanggan setia &amp; margin lebih besar.</div>
+
+<hr class="page-break">
+
+<!-- ====== URUTAN ====== -->
+<h1>Urutan Daftar yang Disarankan</h1>
+
+<h2>Minggu 1: Domain &amp; Email</h2>
+<ol>
+  <li><strong>Beli domain</strong> di Niagahoster/Cloudflare (~Rp 150-270rb/tahun)</li>
+  <li><strong>Verify domain di Resend</strong> (gratis, edit DNS)</li>
+  <li><strong>Setup domain di Vercel</strong> (gratis, edit DNS)</li>
+  <li><strong>Update env var</strong> <code>RESEND_FROM_EMAIL</code> ke <code>noreply@namatoko.com</code></li>
+</ol>
+<p><strong>Hasil:</strong> Website punya nama sendiri + email pro dari domain sendiri.</p>
+
+<h2>Minggu 2: Payment Gateway</h2>
+<ol>
+  <li><strong>Daftar Midtrans</strong> Sandbox (gratis, langsung aktif)</li>
+  <li><strong>Test integrasi</strong> di sandbox</li>
+  <li><strong>Ajukan Production</strong> (KYC: KTP + rekening)</li>
+  <li><strong>Tunggu approval</strong> 3-7 hari kerja</li>
+  <li><strong>Switch ke Production keys</strong></li>
+</ol>
+<p><strong>Hasil:</strong> Pembeli bisa bayar QRIS/VA/e-wallet di website.</p>
+
+<h2>Minggu 3: Ongkir Otomatis</h2>
+<ol>
+  <li><strong>Daftar RajaOngkir Starter</strong> (gratis) untuk test</li>
+  <li><strong>Integrasi ke checkout</strong></li>
+  <li><strong>Upgrade ke Basic</strong> Rp 50rb/bulan saat siap go-live</li>
+</ol>
+<p><strong>Hasil:</strong> Pembeli lihat ongkir &amp; pilih kurir saat checkout.</p>
+
+<h2>Minggu 4+: Polish</h2>
+<ul>
+  <li>WhatsApp notif (Fonnte ~Rp 50rb/bulan)</li>
+  <li>Halaman tracking pesanan</li>
+  <li>Optimasi foto produk</li>
+</ul>
+
+<hr>
+
+<!-- ====== CATATAN ====== -->
+<h1>Catatan Penting</h1>
+
+<h2>Yang TIDAK Perlu Bayar</h2>
+<table>
+  <tr><th>Item</th><th>Penjelasan</th></tr>
+  <tr><td>Akun Vercel</td><td>Hobby plan gratis selamanya</td></tr>
+  <tr><td>Akun Supabase</td><td>Free tier gratis (cukup untuk toko kecil-menengah)</td></tr>
+  <tr><td>Akun Resend</td><td>Free tier 3.000 email/bulan gratis</td></tr>
+  <tr><td>Akun Midtrans</td><td>Setup gratis, hanya bayar saat transaksi</td></tr>
+  <tr><td>Akun GitHub</td><td>Gratis untuk repo public/private personal</td></tr>
+  <tr><td>SSL/HTTPS</td><td>Otomatis dari Vercel/Cloudflare</td></tr>
+  <tr><td>CDN</td><td>Otomatis dari Vercel</td></tr>
+  <tr><td>Backup database</td><td>Otomatis dari Supabase</td></tr>
+</table>
+
+<h2>Yang Bisa Hemat</h2>
+<ul>
+  <li><strong>Pakai RajaOngkir Starter dulu</strong> sambil test. Upgrade Basic saat banyak pembeli komplain JNE/J&amp;T tidak ada.</li>
+  <li><strong>Tunda Vercel Pro</strong> sampai trafik benar-benar tinggi. Hobby plan handle ribuan visitor/bulan.</li>
+  <li><strong>Tunda Supabase Pro</strong> sampai database/storage hampir penuh.</li>
+  <li><strong>Domain .com lebih murah</strong> dari .id (Rp 150rb vs Rp 270rb/tahun).</li>
+  <li><strong>Cloudflare adalah provider domain termurah</strong> (tapi tidak ada support Indonesia).</li>
+</ul>
+
+<h2>Yang Sebaiknya JANGAN Hemat</h2>
+<div class="warn">
+  <strong>Jangan pakai gateway pembayaran tidak resmi.</strong> Ada penyedia "gateway" murah yang sebenarnya bukan licensed Bank Indonesia. Risiko: uang ditahan, akun ditutup tiba-tiba, atau ditolak bank. Tetap pakai Midtrans/Xendit/Doku yang official.
+</div>
+
+<div class="warn">
+  <strong>Jangan skip KYC Midtrans.</strong> Akun sandbox tidak bisa terima uang sungguhan. Production butuh KTP + rekening + verifikasi.
+</div>
+
+<div class="warn">
+  <strong>Jangan pakai email gratis (gmail.com) untuk notifikasi toko.</strong> Pembeli akan curiga. Email dari domain sendiri (noreply@namatoko.com) terlihat profesional dan dipercaya.
+</div>
+
+<hr>
+
+<h2>Link Daftar</h2>
+<table>
+  <tr><th>Layanan</th><th>URL Daftar</th></tr>
+  <tr><td>Midtrans</td><td>dashboard.midtrans.com</td></tr>
+  <tr><td>RajaOngkir</td><td>rajaongkir.com</td></tr>
+  <tr><td>Niagahoster (domain)</td><td>niagahoster.co.id</td></tr>
+  <tr><td>Cloudflare (domain)</td><td>cloudflare.com</td></tr>
+  <tr><td>Namecheap (domain)</td><td>namecheap.com</td></tr>
+  <tr><td>Resend</td><td>resend.com (sudah punya akun)</td></tr>
+  <tr><td>Fonnte (WhatsApp API)</td><td>fonnte.com</td></tr>
+</table>
+
+<hr>
+<p style="text-align:center; color:#999; margin-top:24px; font-size:0.85em;">
+  Estimasi biaya per Mei 2026. Cek website masing-masing untuk harga terbaru.
+</p>
+
+</body>
+</html>

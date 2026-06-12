@@ -3,14 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { CheckCircle2 } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/config";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
 
 export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
@@ -25,9 +19,7 @@ export default function CheckoutPage() {
     }
   }, [items.length, success, router]);
 
-  if (items.length === 0 && !success) {
-    return null;
-  }
+  if (items.length === 0 && !success) return null;
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -72,64 +64,174 @@ export default function CheckoutPage() {
 
   if (success) {
     return (
-      <div className="mx-auto max-w-lg px-4 py-20 text-center sm:px-6">
-        <CheckCircle2 className="mx-auto h-16 w-16 text-green-600" />
-        <h1 className="mt-4 font-heading text-2xl font-semibold">Pesanan Berhasil!</h1>
-        <p className="mt-2 text-muted-foreground">
-          Terima kasih! Kami akan menghubungi Anda via WhatsApp untuk konfirmasi pesanan.
+      <div className="mx-auto max-w-[480px] px-6 py-24 text-center sm:py-32">
+        <p className="text-[11px] tracking-[0.18em] uppercase opacity-60">Konfirmasi</p>
+        <h1 className="mt-3 font-heading text-5xl uppercase">Terima Kasih</h1>
+        <p className="mt-6 text-[12px] tracking-[0.04em] uppercase opacity-80">
+          Pesanan Anda berhasil dibuat. Kami akan menghubungi Anda via WhatsApp untuk konfirmasi.
         </p>
-        <Link href="/shop" className="mt-6 inline-block">
-          <Button className="text-xs uppercase tracking-widest">Lanjut Belanja</Button>
+        <Link
+          href="/shop"
+          className="mt-10 inline-block border border-foreground px-8 py-3 text-[12px] tracking-[0.12em] uppercase hover:bg-foreground hover:text-background"
+        >
+          Lanjut Belanja
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
-      <h1 className="font-heading text-3xl font-semibold tracking-wider uppercase mb-8">Checkout</h1>
-
-      <div className="mb-8 rounded-sm border border-border p-4">
-        <h2 className="mb-3 text-xs uppercase tracking-wider text-muted-foreground">Ringkasan Pesanan</h2>
-        {items.map((item) => (
-          <div key={`${item.product_id}-${item.size}`} className="flex justify-between py-1 text-sm">
-            <span>{item.name} ({item.size}) &times; {item.quantity}</span>
-            <span>{formatPrice(item.price * item.quantity)}</span>
-          </div>
-        ))}
-        <Separator className="my-3" />
-        <div className="flex justify-between font-medium">
-          <span>Total</span>
-          <span className="font-heading text-lg">{formatPrice(totalPrice)}</span>
-        </div>
+    <div className="px-4 pt-6 pb-20 sm:px-12">
+      <div className="mb-8">
+        <p className="text-[11px] tracking-[0.18em] uppercase opacity-60">|02|</p>
+        <h1 className="mt-2 font-heading text-4xl uppercase sm:text-5xl">Checkout</h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="name">Nama Lengkap *</Label>
-          <Input id="name" name="name" required placeholder="Nama lengkap" />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="phone">No. WhatsApp *</Label>
-          <Input id="phone" name="phone" type="tel" required placeholder="08xxxxxxxxxx" />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="email">Email (opsional)</Label>
-          <Input id="email" name="email" type="email" placeholder="email@example.com" />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="address">Alamat Lengkap *</Label>
-          <Textarea id="address" name="address" required placeholder="Alamat lengkap untuk pengiriman" rows={3} />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="notes">Catatan (opsional)</Label>
-          <Textarea id="notes" name="notes" placeholder="Catatan tambahan untuk pesanan" rows={2} />
-        </div>
-        {error && <p className="text-sm text-destructive">{error}</p>}
-        <Button type="submit" disabled={loading} className="w-full text-xs uppercase tracking-widest" size="lg">
-          {loading ? "Memproses\u2026" : "Pesan Sekarang"}
-        </Button>
-      </form>
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_380px] lg:gap-16">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <Section title="Detail Kontak" idx="01">
+            <Field label="Nama Lengkap" name="name" required placeholder="Nama lengkap" />
+            <Field
+              label="No. WhatsApp"
+              name="phone"
+              type="tel"
+              required
+              placeholder="08xxxxxxxxxx"
+            />
+            <Field
+              label="Email (opsional)"
+              name="email"
+              type="email"
+              placeholder="email@example.com"
+            />
+          </Section>
+
+          <Section title="Pengiriman" idx="02">
+            <Field
+              label="Alamat Lengkap"
+              name="address"
+              required
+              textarea
+              rows={3}
+              placeholder="Alamat lengkap untuk pengiriman"
+            />
+            <Field
+              label="Catatan (opsional)"
+              name="notes"
+              textarea
+              rows={2}
+              placeholder="Catatan tambahan"
+            />
+          </Section>
+
+          {error && (
+            <p className="text-[11px] tracking-[0.08em] uppercase text-destructive">{error}</p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full border border-foreground py-4 text-[12px] tracking-[0.12em] uppercase hover:bg-foreground hover:text-background disabled:opacity-50"
+          >
+            {loading ? "Memproses…" : "Konfirmasi Pesanan"}
+          </button>
+        </form>
+
+        {/* Order summary */}
+        <aside className="lg:sticky lg:top-12 lg:h-fit">
+          <div className="border border-foreground/10 p-6 sm:p-8">
+            <h2 className="text-[11px] tracking-[0.12em] uppercase opacity-60">Ringkasan</h2>
+            <div className="mt-5 space-y-2 text-[12px] tracking-[0.04em] uppercase">
+              {items.map((item) => (
+                <div
+                  key={`${item.product_id}-${item.size}`}
+                  className="flex items-start justify-between gap-3"
+                >
+                  <span className="min-w-0 flex-1">
+                    {item.name}{" "}
+                    <span className="opacity-60">
+                      / {item.size} / x{item.quantity}
+                    </span>
+                  </span>
+                  <span className="tabular-nums">{formatPrice(item.price * item.quantity)}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-5 border-t border-foreground/20 pt-5">
+              <div className="flex items-center justify-between text-[14px] tracking-[0.04em] uppercase">
+                <span>Total</span>
+                <span className="tabular-nums">{formatPrice(totalPrice)}</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
     </div>
+  );
+}
+
+function Section({
+  title,
+  idx,
+  children,
+}: {
+  title: string;
+  idx: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <p className="text-[11px] tracking-[0.12em] uppercase">
+        <span className="opacity-60">|{idx}|</span> <span className="ml-1">{title}</span>
+      </p>
+      <div className="mt-4 space-y-4">{children}</div>
+    </div>
+  );
+}
+
+function Field({
+  label,
+  name,
+  type = "text",
+  required,
+  placeholder,
+  textarea,
+  rows = 1,
+}: {
+  label: string;
+  name: string;
+  type?: string;
+  required?: boolean;
+  placeholder?: string;
+  textarea?: boolean;
+  rows?: number;
+}) {
+  const inputClass =
+    "block w-full border-b border-foreground/30 bg-transparent py-3 text-[14px] outline-none placeholder:opacity-40 focus:border-foreground";
+  return (
+    <label className="block">
+      <span className="text-[11px] tracking-[0.08em] uppercase opacity-70">
+        {label}
+        {required && <span className="ml-1 opacity-60">*</span>}
+      </span>
+      {textarea ? (
+        <textarea
+          name={name}
+          required={required}
+          placeholder={placeholder}
+          rows={rows}
+          className={`${inputClass} resize-none`}
+        />
+      ) : (
+        <input
+          name={name}
+          type={type}
+          required={required}
+          placeholder={placeholder}
+          className={inputClass}
+        />
+      )}
+    </label>
   );
 }

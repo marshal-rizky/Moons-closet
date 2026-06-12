@@ -45,4 +45,13 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
+# agent / dev tool artifacts
+.agents/
+.playwright-mcp/
+.claude/
+skills-lock.json
+
+# dev screenshots in repo root (Zara extraction + redesign captures)
+/*.png
+/*.jpg
+/*.jpeg

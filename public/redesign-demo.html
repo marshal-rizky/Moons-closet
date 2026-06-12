@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redesign Demo — Nama Toko</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=Syne:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d0c0b;
+      --surface:  #131210;
+      --border:   #2a2724;
+      --ivory:    #f0ebe3;
+      --ivory-dim:#9e9690;
+      --ember:    #d4521a;
+      --ember-dim:#7a2e0b;
+      --white:    #faf8f5;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ivory);
+      font-family: 'Syne', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── Custom cursor ── */
+    .cursor {
+      width: 10px; height: 10px;
+      background: var(--ember);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.08s ease, width 0.2s ease, height 0.2s ease, background 0.2s ease;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1px solid var(--ember);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.18s ease, width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
+      opacity: 0.5;
+    }
+    body:has(a:hover) .cursor { width: 16px; height: 16px; background: var(--white); }
+    body:has(a:hover) .cursor-ring { width: 52px; height: 52px; opacity: 0.2; }
+
+    /* ── Noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.4;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 2.5rem;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s, background 0.3s, backdrop-filter 0.3s;
+    }
+    nav.scrolled {
+      border-color: var(--border);
+      background: rgba(13,12,11,0.85);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 0.15em;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2.5rem; }
+    .nav-links a {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ivory-dim);
+      text-decoration: none;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute; bottom: -3px; left: 0; right: 0; height: 1px;
+      background: var(--ember);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.25s ease;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+    .nav-cart {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--ivory-dim); cursor: pointer;
+      transition: color 0.2s;
+    }
+    .nav-cart:hover { color: var(--white); }
+    .cart-dot {
+      width: 20px; height: 20px;
+      background: var(--ember);
+      color: var(--white);
+      font-size: 0.6rem; font-weight: 700;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100svh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-left {
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 2.5rem;
+      padding-top: 8rem;
+      position: relative;
+    }
+    .hero-eyebrow {
+      font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--ember); margin-bottom: 1.5rem;
+      opacity: 0; animation: fadeUp 0.8s 0.3s ease forwards;
+    }
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(5rem, 10vw, 9rem);
+      line-height: 0.92;
+      letter-spacing: 0.02em;
+      color: var(--white);
+      opacity: 0; animation: fadeUp 0.9s 0.5s ease forwards;
+    }
+    .hero-title em {
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      color: var(--ember);
+    }
+    .hero-sub {
+      margin-top: 2rem;
+      font-size: 0.85rem; line-height: 1.7;
+      color: var(--ivory-dim); max-width: 28ch;
+      opacity: 0; animation: fadeUp 0.9s 0.7s ease forwards;
+    }
+    .hero-cta {
+      margin-top: 3rem; display: flex; gap: 1rem; align-items: center;
+      opacity: 0; animation: fadeUp 0.9s 0.9s ease forwards;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.75rem;
+      background: var(--ember); color: var(--white);
+      padding: 0.875rem 2rem;
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      text-decoration: none; font-weight: 700;
+      transition: background 0.2s, transform 0.2s;
+      clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    }
+    .btn-primary:hover { background: #bf4915; transform: translateY(-1px); }
+    .btn-ghost {
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--ivory-dim); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .btn-ghost:hover { color: var(--white); }
+
+    .hero-right {
+      position: relative; overflow: hidden;
+      background: var(--surface);
+    }
+    .hero-img-placeholder {
+      width: 100%; height: 100%;
+      background: linear-gradient(160deg, #1a1713 0%, #0d0c0b 60%, var(--ember-dim) 200%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .hero-img-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 8vw, 7rem);
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.04);
+      text-transform: uppercase;
+      writing-mode: vertical-rl;
+      user-select: none;
+    }
+    .hero-season-tag {
+      position: absolute; bottom: 2.5rem; right: 2.5rem;
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--ivory-dim);
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+    }
+    .hero-scroll-hint {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--ivory-dim);
+      opacity: 0; animation: fadeUp 1s 1.2s ease forwards;
+    }
+    .scroll-line {
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, var(--ember), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    .hero-counter {
+      position: absolute; top: 50%; right: 2.5rem;
+      transform: translateY(-50%);
+      font-size: 0.65rem; letter-spacing: 0.15em; color: var(--ivory-dim);
+      writing-mode: vertical-rl;
+    }
+
+    /* ── Marquee ── */
+    .marquee-wrap {
+      overflow: hidden;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 0;
+      background: var(--surface);
+    }
+    .marquee-track {
+      display: flex; gap: 0; white-space: nowrap;
+      animation: marquee 22s linear infinite;
+    }
+    .marquee-track:hover { animation-play-state: paused; }
+    .marquee-item {
+      display: inline-flex; align-items: center; gap: 2.5rem;
+      padding: 0 2.5rem;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem; letter-spacing: 0.15em;
+      color: var(--ivory-dim);
+    }
+    .marquee-dot { color: var(--ember); }
+
+    /* ── Section: Categories ── */
+    .section-categories {
+      padding: 6rem 2.5rem;
+    }
+    .section-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 3rem;
+    }
+    .section-label {
+      font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--ember); margin-bottom: 0.5rem;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      letter-spacing: 0.04em;
+      color: var(--white); line-height: 1;
+    }
+    .section-title em {
+      font-family: 'DM Serif Display', serif;
+      font-style: italic; color: var(--ivory-dim);
+    }
+    .section-link {
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--ivory-dim); text-decoration: none;
+      display: flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; padding-bottom: 0.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-link:hover { color: var(--white); border-color: var(--ivory-dim); }
+
+    .cat-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 280px 200px;
+      gap: 2px;
+    }
+    .cat-card {
+      position: relative; overflow: hidden;
+      background: var(--surface);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .cat-card:first-child { grid-row: 1 / 3; }
+    .cat-bg {
+      position: absolute; inset: 0;
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s;
+    }
+    .cat-card:hover .cat-bg { transform: scale(1.06); }
+    .cat-bg-1 { background: linear-gradient(135deg, #1e1b17 0%, #0d0c0b 50%, #2d1a0e 100%); }
+    .cat-bg-2 { background: linear-gradient(135deg, #131210 0%, #1a1713 100%); }
+    .cat-bg-3 { background: linear-gradient(135deg, #1a1713 0%, #0f0e0c 100%); }
+    .cat-bg-4 { background: linear-gradient(135deg, #0d0c0b 0%, #1e1b17 100%); }
+    .cat-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
+    }
+    .cat-content {
+      position: absolute; bottom: 1.5rem; left: 1.5rem; right: 1.5rem;
+    }
+    .cat-num {
+      font-size: 0.6rem; letter-spacing: 0.3em;
+      color: var(--ember); margin-bottom: 0.4rem;
+    }
+    .cat-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem; letter-spacing: 0.06em;
+      color: var(--white);
+    }
+    .cat-card:first-child .cat-name { font-size: 2.8rem; }
+    .cat-arrow {
+      display: inline-block;
+      color: var(--ember);
+      font-size: 1.2rem;
+      transform: translateX(0);
+      transition: transform 0.2s;
+    }
+    .cat-card:hover .cat-arrow { transform: translateX(4px); }
+    .cat-pattern {
+      position: absolute; top: 1.5rem; right: 1.5rem;
+      width: 40px; height: 40px;
+      border: 1px solid rgba(255,255,255,0.06);
+      transform: rotate(45deg);
+    }
+
+    /* ── Section: Products ── */
+    .section-products {
+      padding: 0 2.5rem 6rem;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+    .product-card {
+      text-decoration: none;
+      display: block;
+      position: relative;
+      cursor: pointer;
+    }
+    .product-img {
+      aspect-ratio: 3/4;
+      background: var(--surface);
+      overflow: hidden;
+      position: relative;
+    }
+    .product-placeholder {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .product-card:hover .product-placeholder { transform: scale(1.04); }
+    .product-placeholder span {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 4rem; letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.04);
+    }
+
+    /* varying card backgrounds */
+    .product-card:nth-child(1) .product-placeholder { background: linear-gradient(160deg, #1a1713, #0d0c0b); }
+    .product-card:nth-child(2) .product-placeholder { background: linear-gradient(160deg, #141210, #1e1b17); }
+    .product-card:nth-child(3) .product-placeholder { background: linear-gradient(160deg, #0f0e0c, #1a1713); }
+    .product-card:nth-child(4) .product-placeholder { background: linear-gradient(160deg, #1c1916, #0d0c0b); }
+
+    .product-tag {
+      position: absolute; top: 1rem; left: 1rem;
+      background: var(--ember); color: var(--white);
+      font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 0.25rem 0.6rem; font-weight: 700;
+    }
+    .product-wishlist {
+      position: absolute; top: 1rem; right: 1rem;
+      width: 32px; height: 32px;
+      border: 1px solid rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ivory-dim); font-size: 0.8rem;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .product-card:hover .product-wishlist { opacity: 1; transform: translateY(0); }
+    .product-info { margin-top: 1rem; }
+    .product-name {
+      font-size: 0.85rem; font-weight: 500;
+      color: var(--ivory); letter-spacing: 0.02em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .product-price {
+      font-size: 0.8rem; color: var(--ivory-dim);
+      margin-top: 0.25rem;
+    }
+    .product-price strong { color: var(--ember); font-weight: 700; }
+    .product-quick-add {
+      margin-top: 0.75rem;
+      display: flex; align-items: center; gap: 0.5rem;
+      opacity: 0; transform: translateY(4px);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .product-card:hover .product-quick-add { opacity: 1; transform: translateY(0); }
+    .quick-add-btn {
+      flex: 1;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--ivory-dim);
+      font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .quick-add-btn:hover {
+      border-color: var(--ember); color: var(--white);
+      background: rgba(212,82,26,0.1);
+    }
+
+    /* ── Editorial strip ── */
+    .editorial {
+      margin: 0 2.5rem 6rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 320px;
+      overflow: hidden;
+      position: relative;
+    }
+    .editorial-text {
+      background: var(--ember);
+      padding: 3rem;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .editorial-kicker {
+      font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+    }
+    .editorial-headline {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 4vw, 3.5rem);
+      line-height: 0.95; letter-spacing: 0.04em;
+      color: var(--white);
+    }
+    .editorial-headline em {
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+    }
+    .editorial-body {
+      font-size: 0.85rem; line-height: 1.7;
+      color: rgba(255,255,255,0.75); max-width: 32ch;
+    }
+    .editorial-cta {
+      display: inline-flex; align-items: center; gap: 0.75rem;
+      background: var(--white); color: var(--ember);
+      padding: 0.75rem 1.75rem;
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      font-weight: 700; text-decoration: none;
+      width: fit-content;
+      transition: transform 0.2s;
+    }
+    .editorial-cta:hover { transform: translateY(-1px); }
+    .editorial-visual {
+      background: linear-gradient(135deg, #1a1713 0%, var(--ember-dim) 200%);
+      position: relative; overflow: hidden;
+    }
+    .editorial-visual-text {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(5rem, 10vw, 9rem);
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.04);
+    }
+    .editorial-visual::after {
+      content: 'SS26';
+      position: absolute; bottom: 1.5rem; right: 1.5rem;
+      font-size: 0.65rem; letter-spacing: 0.3em;
+      color: rgba(255,255,255,0.2);
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem; letter-spacing: 0.15em;
+      color: var(--ivory-dim);
+    }
+    .footer-copy {
+      font-size: 0.65rem; letter-spacing: 0.1em;
+      color: var(--ivory-dim);
+    }
+    .footer-links { display: flex; gap: 2rem; }
+    .footer-links a {
+      font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--ivory-dim); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--white); }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.3; transform: scaleY(1); }
+      50%       { opacity: 1;   transform: scaleY(0.85); }
+    }
+
+    /* Scroll reveal */
+    .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.25rem; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-right { display: none; }
+      .hero-left { padding: 6rem 1.25rem 4rem; }
+      .hero-title { font-size: clamp(4rem, 16vw, 6rem); }
+      .section-categories, .section-products { padding-left: 1.25rem; padding-right: 1.25rem; }
+      .cat-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; gap: 2px; }
+      .cat-card:first-child { grid-row: auto; }
+      .product-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+      .editorial { grid-template-columns: 1fr; margin: 0 1.25rem 4rem; }
+      .editorial-visual { min-height: 160px; }
+      footer { flex-direction: column; gap: 1.5rem; text-align: center; }
+    }
+
+    /* ── Demo badge ── */
+    .demo-badge {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 500;
+      background: var(--ember); color: var(--white);
+      font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 0.5rem 1rem; font-weight: 700;
+      clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+      animation: fadeUp 0.8s 1.5s ease both;
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="curRing"></div>
+
+<!-- Nav -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">Nama Toko</a>
+  <div class="nav-links">
+    <a href="#">Beranda</a>
+    <a href="#">Belanja</a>
+    <a href="#">Koleksi</a>
+    <a href="#">Kontak</a>
+  </div>
+  <div class="nav-cart">
+    <span>Keranjang</span>
+    <span class="cart-dot">2</span>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Koleksi Baru — Spring / Summer 2026</p>
+    <h1 class="hero-title">
+      Temukan<br /><em>Gaya</em><br />Kamu
+    </h1>
+    <p class="hero-sub">Pilihan busana pilihan untuk mereka yang tahu apa yang diinginkan. Kualitas bicara sendiri.</p>
+    <div class="hero-cta">
+      <a href="#" class="btn-primary">Belanja Sekarang →</a>
+      <a href="#" class="btn-ghost">Lihat Lookbook</a>
+    </div>
+    <div class="hero-scroll-hint">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-img-placeholder">
+      <span class="hero-img-text">SS26</span>
+    </div>
+    <div class="hero-season-tag">Koleksi Musim Ini</div>
+    <div class="hero-counter">01 / 04</div>
+  </div>
+</section>
+
+<!-- Marquee -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <!-- duplicated for seamless loop -->
+    <span class="marquee-item">Koleksi Terbaru <span class="marquee-dot">◆</span></span>
+    <span class="marquee-item">Kualitas Premium <span class="marquee-dot">◆</span></span>
+    <span class="marquee-item">Gratis Ongkos Kirim <span class="marquee-dot">◆</span></span>
+    <span class="marquee-item">Desain Eksklusif <span class="marquee-dot">◆</span></span>
+    <span class="marquee-item">Spring / Summer 2026 <span class="marquee-dot">◆</span></span>
+    <span class="marquee-item">Koleksi Terbaru <span class="marquee-dot">◆</span></span>
+    <span class="marquee-item">Kualitas Premium <span class="marquee-dot">◆</span></span>
+    <span class="marquee-item">Gratis Ongkos Kirim <span class="marquee-dot">◆</span></span>
+    <span class="marquee-item">Desain Eksklusif <span class="marquee-dot">◆</span></span>
+    <span class="marquee-item">Spring / Summer 2026 <span class="marquee-dot">◆</span></span>
+  </div>
+</div>
+
+<!-- Categories -->
+<section class="section-categories">
+  <div class="section-header reveal">
+    <div>
+      <p class="section-label">Telusuri</p>
+      <h2 class="section-title">Semua <em>Kategori</em></h2>
+    </div>
+    <a href="#" class="section-link">Lihat Semua →</a>
+  </div>
+  <div class="cat-grid reveal">
+    <a href="#" class="cat-card">
+      <div class="cat-bg cat-bg-1"></div>
+      <div class="cat-overlay"></div>
+      <div class="cat-pattern"></div>
+      <div class="cat-content">
+        <p class="cat-num">01</p>
+        <p class="cat-name">Atasan <span class="cat-arrow">→</span></p>
+      </div>
+    </a>
+    <a href="#" class="cat-card">
+      <div class="cat-bg cat-bg-2"></div>
+      <div class="cat-overlay"></div>
+      <div class="cat-content">
+        <p class="cat-num">02</p>
+        <p class="cat-name">Bawahan <span class="cat-arrow">→</span></p>
+      </div>
+    </a>
+    <a href="#" class="cat-card">
+      <div class="cat-bg cat-bg-3"></div>
+      <div class="cat-overlay"></div>
+      <div class="cat-content">
+        <p class="cat-num">03</p>
+        <p class="cat-name">Outer <span class="cat-arrow">→</span></p>
+      </div>
+    </a>
+    <a href="#" class="cat-card">
+      <div class="cat-bg cat-bg-4"></div>
+      <div class="cat-overlay"></div>
+      <div class="cat-content">
+        <p class="cat-num">04</p>
+        <p class="cat-name">Aksesori <span class="cat-arrow">→</span></p>
+      </div>
+    </a>
+    <a href="#" class="cat-card">
+      <div class="cat-bg cat-bg-2"></div>
+      <div class="cat-overlay"></div>
+      <div class="cat-content">
+        <p class="cat-num">05</p>
+        <p class="cat-name">Promo <span class="cat-arrow">→</span></p>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- Products -->
+<section class="section-products">
+  <div class="section-header reveal">
+    <div>
+      <p class="section-label">Terbaru</p>
+      <h2 class="section-title">Produk <em>Pilihan</em></h2>
+    </div>
+    <a href="#" class="section-link">Lihat Semua →</a>
+  </div>
+  <div class="product-grid">
+    <a href="#" class="product-card reveal">
+      <div class="product-img">
+        <div class="product-placeholder"><span>01</span></div>
+        <span class="product-tag">Baru</span>
+        <span class="product-wishlist">♡</span>
+      </div>
+      <div class="product-info">
+        <p class="product-name">Kaos Premium Oversize</p>
+        <p class="product-price"><strong>Rp 185.000</strong></p>
+        <div class="product-quick-add">
+          <button class="quick-add-btn">+ Keranjang</button>
+        </div>
+      </div>
+    </a>
+    <a href="#" class="product-card reveal">
+      <div class="product-img">
+        <div class="product-placeholder"><span>02</span></div>
+        <span class="product-wishlist">♡</span>
+      </div>
+      <div class="product-info">
+        <p class="product-name">Celana Cargo Slim Fit</p>
+        <p class="product-price"><strong>Rp 265.000</strong></p>
+        <div class="product-quick-add">
+          <button class="quick-add-btn">+ Keranjang</button>
+        </div>
+      </div>
+    </a>
+    <a href="#" class="product-card reveal">
+      <div class="product-img">
+        <div class="product-placeholder"><span>03</span></div>
+        <span class="product-tag">Bestseller</span>
+        <span class="product-wishlist">♡</span>
+      </div>
+      <div class="product-info">
+        <p class="product-name">Hoodie Essential Dark</p>
+        <p class="product-price"><strong>Rp 320.000</strong></p>
+        <div class="product-quick-add">
+          <button class="quick-add-btn">+ Keranjang</button>
+        </div>
+      </div>
+    </a>
+    <a href="#" class="product-card reveal">
+      <div class="product-img">
+        <div class="product-placeholder"><span>04</span></div>
+        <span class="product-wishlist">♡</span>
+      </div>
+      <div class="product-info">
+        <p class="product-name">Jacket Bomber Retro</p>
+        <p class="product-price"><strong>Rp 450.000</strong></p>
+        <div class="product-quick-add">
+          <button class="quick-add-btn">+ Keranjang</button>
+        </div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- Editorial strip -->
+<div class="editorial reveal">
+  <div class="editorial-text">
+    <p class="editorial-kicker">Lookbook SS26</p>
+    <h3 class="editorial-headline">Gaya yang<br /><em>Bicara</em><br />Sendiri</h3>
+    <p class="editorial-body">Koleksi musim ini terinspirasi dari kontras — keras dan lembut, gelap dan terang. Temukan paduan yang mencerminkan siapa kamu.</p>
+    <a href="#" class="editorial-cta">Lihat Lookbook →</a>
+  </div>
+  <div class="editorial-visual">
+    <div class="editorial-visual-text">STYLE</div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <span class="footer-logo">Nama Toko</span>
+  <div class="footer-links">
+    <a href="#">Instagram</a>
+    <a href="#">WhatsApp</a>
+    <a href="#">Kontak</a>
+  </div>
+  <span class="footer-copy">© 2026 Nama Toko. All rights reserved.</span>
+</footer>
+
+<!-- Demo badge -->
+<div class="demo-badge">Demo Redesign</div>
+
+<script>
+  // Cursor
+  const cur = document.getElementById('cur');
+  const curRing = document.getElementById('curRing');
+  document.addEventListener('mousemove', e => {
+    cur.style.left = e.clientX + 'px';
+    cur.style.top = e.clientY + 'px';
+    curRing.style.left = e.clientX + 'px';
+    curRing.style.top = e.clientY + 'px';
+  });
+
+  // Nav scroll
+  const nav = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => io.observe(el));
+</script>
+</body>
+</html>

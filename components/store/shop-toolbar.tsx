@@ -2,19 +2,24 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Search, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 interface ShopToolbarProps {
   categories: string[];
   initialSearch?: string;
 }
 
+const CATEGORY_LABEL: Record<string, string> = {
+  atasan: "Atasan",
+  bawahan: "Bawahan",
+  dress: "Dress",
+};
+
 export function ShopToolbar({ categories, initialSearch = "" }: ShopToolbarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentCategory = searchParams.get("category") || "";
   const [search, setSearch] = useState(initialSearch);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     setSearch(searchParams.get("search") || "");
@@ -23,11 +28,8 @@ export function ShopToolbar({ categories, initialSearch = "" }: ShopToolbarProps
   function updateParams(updates: Record<string, string | null>) {
     const params = new URLSearchParams(searchParams.toString());
     for (const [key, value] of Object.entries(updates)) {
-      if (value) {
-        params.set(key, value);
-      } else {
-        params.delete(key);
-      }
+      if (value) params.set(key, value);
+      else params.delete(key);
     }
     router.push(`/shop?${params.toString()}`);
   }
@@ -35,9 +37,7 @@ export function ShopToolbar({ categories, initialSearch = "" }: ShopToolbarProps
   useEffect(() => {
     const timeout = setTimeout(() => {
       const currentSearch = searchParams.get("search") || "";
-      if (search !== currentSearch) {
-        updateParams({ search: search || null });
-      }
+      if (search !== currentSearch) updateParams({ search: search || null });
     }, 300);
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -48,49 +48,49 @@ export function ShopToolbar({ categories, initialSearch = "" }: ShopToolbarProps
     setSearch("");
   }
 
+  const items = [
+    { value: "", label: "View All" },
+    ...categories.map((c) => ({ value: c, label: CATEGORY_LABEL[c] || c })),
+  ];
+
   return (
-    <div className="space-y-4">
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder={currentCategory ? `Cari di ${currentCategory}\u2026` : "Cari produk\u2026"}
-          className="h-10 w-full rounded-sm border border-border bg-background pl-10 pr-10 text-sm outline-none transition-colors focus:border-foreground"
-        />
-        {search && (
-          <button
-            onClick={() => {
-              setSearch("");
-              updateParams({ search: null });
-            }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        )}
+    <div className="space-y-6">
+      {/* Numbered category nav */}
+      <div className="space-y-1.5 text-[12px] tracking-[0.06em] uppercase">
+        {items.map((item, i) => {
+          const active = currentCategory === item.value;
+          const idx = String(i + 1).padStart(2, "0");
+          return (
+            <button
+              key={item.value || "all"}
+              onClick={() => handleCategoryChange(item.value)}
+              className={`block w-full text-left uppercase tracking-[0.06em] ${active ? "font-medium" : "opacity-60 hover:opacity-100"}`}
+            >
+              <span className={active ? "" : "opacity-70"}>|{idx}|</span>{" "}
+              <span className="ml-1">{item.label}</span>
+            </button>
+          );
+        })}
       </div>
-      <div className="flex flex-wrap gap-2">
-        <Button
-          variant={!currentCategory ? "default" : "outline"}
-          size="sm"
-          onClick={() => handleCategoryChange("")}
-          className="text-xs uppercase tracking-wider"
+
+      {/* Filters / search toggle */}
+      <div className="pt-2 text-[12px] tracking-[0.06em] uppercase">
+        <button
+          onClick={() => setSearchOpen((v) => !v)}
+          className="block py-1 uppercase tracking-[0.06em] opacity-60 hover:opacity-100"
         >
-          Semua
-        </Button>
-        {categories.map((cat) => (
-          <Button
-            key={cat}
-            variant={currentCategory === cat ? "default" : "outline"}
-            size="sm"
-            onClick={() => handleCategoryChange(cat)}
-            className="text-xs uppercase tracking-wider"
-          >
-            {cat}
-          </Button>
-        ))}
+          {searchOpen ? "× Tutup" : "Cari"}
+        </button>
+        {searchOpen && (
+          <input
+            autoFocus
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cari produk…"
+            className="mt-2 block w-full border-b border-foreground bg-transparent py-2 text-[13px] tracking-normal uppercase outline-none placeholder:opacity-40"
+          />
+        )}
       </div>
     </div>
   );

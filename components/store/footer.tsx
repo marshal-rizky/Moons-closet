@@ -3,53 +3,49 @@ import { siteConfig } from "@/lib/config";
 
 export function Footer() {
   return (
-    <footer className="border-t border-border/50 bg-secondary/30">
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          <div>
-            <h3 className="font-heading text-lg font-semibold tracking-wider uppercase">
-              {siteConfig.name}
-            </h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {siteConfig.tagline}
-            </p>
-          </div>
+    <footer className="border-t border-foreground/10 bg-background">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-12 sm:py-20">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4">
+          <FooterCol heading="Bantuan">
+            <Link href="/contact">Kontak</Link>
+            <a href={`https://wa.me/${siteConfig.whatsapp}`} target="_blank" rel="noopener noreferrer">
+              WhatsApp
+            </a>
+            <a href={`mailto:${siteConfig.email}`}>Email</a>
+          </FooterCol>
 
-          <div>
-            <h4 className="text-sm font-semibold uppercase tracking-wider">Menu</h4>
-            <nav className="mt-3 flex flex-col gap-2">
-              <Link href="/shop" className="text-sm text-muted-foreground hover:text-foreground">
-                Belanja
-              </Link>
-              <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground">
-                Kontak
-              </Link>
-            </nav>
-          </div>
+          <FooterCol heading="Belanja">
+            <Link href="/shop">Semua</Link>
+            <Link href="/shop?category=atasan">Atasan</Link>
+            <Link href="/shop?category=bawahan">Bawahan</Link>
+            <Link href="/shop?category=dress">Dress</Link>
+          </FooterCol>
 
-          <div>
-            <h4 className="text-sm font-semibold uppercase tracking-wider">Kontak</h4>
-            <div className="mt-3 flex flex-col gap-2 text-sm text-muted-foreground">
-              <a
-                href={`https://wa.me/${siteConfig.whatsapp}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-foreground"
-              >
-                WhatsApp
-              </a>
-              <a href={`mailto:${siteConfig.email}`} className="hover:text-foreground">
-                {siteConfig.email}
-              </a>
-              <p>{siteConfig.address}</p>
-            </div>
-          </div>
+          <FooterCol heading="Toko">
+            <p>{siteConfig.address}</p>
+          </FooterCol>
+
+          <FooterCol heading={siteConfig.name}>
+            <p>{siteConfig.tagline}</p>
+          </FooterCol>
         </div>
 
-        <div className="mt-10 border-t border-border/50 pt-6 text-center text-xs text-muted-foreground">
-          &copy; {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
+        <div className="mt-16 flex flex-col gap-2 border-t border-foreground/10 pt-6 text-[11px] tracking-[0.08em] uppercase sm:flex-row sm:items-center sm:justify-between">
+          <span>&copy; {new Date().getFullYear()} {siteConfig.name}</span>
+          <span className="opacity-60">Indonesia / Bahasa Indonesia</span>
         </div>
       </div>
     </footer>
+  );
+}
+
+function FooterCol({ heading, children }: { heading: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-2 text-[12px] tracking-[0.04em]">
+      <h3 className="mb-2 text-[11px] tracking-[0.12em] uppercase">{heading}</h3>
+      <div className="flex flex-col gap-2 [&>a]:w-fit [&>a:hover]:underline [&>a]:underline-offset-[4px]">
+        {children}
+      </div>
+    </div>
   );
 }

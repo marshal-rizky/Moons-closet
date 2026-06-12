@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant, Montserrat } from "next/font/google";
+import { Cormorant } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 
@@ -8,13 +8,6 @@ const cormorant = Cormorant({
   variable: "--font-heading",
   display: "swap",
   weight: ["400", "500", "600", "700"],
-});
-
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  variable: "--font-body",
-  display: "swap",
-  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -28,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${cormorant.variable} ${montserrat.variable}`}>
-      <body className="font-body antialiased">
+    <html lang="id" className={cormorant.variable}>
+      <body className="antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>

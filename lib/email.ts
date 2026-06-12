@@ -13,13 +13,13 @@ function getResend() {
   return new Resend(key);
 }
 
-export function sendAdminOrderAlert(order: Order) {
+export async function sendAdminOrderAlert(order: Order) {
   const resend = getResend();
   if (!resend) return;
   console.log("Sending admin alert email to:", siteConfig.email);
   const itemCount = order.items.reduce((sum, i) => sum + i.quantity, 0);
 
-  resend.emails.send({
+  await resend.emails.send({
     from: fromEmail,
     to: siteConfig.email,
     subject: `Pesanan Baru #${order.order_number}`,
@@ -51,12 +51,12 @@ export function sendAdminOrderAlert(order: Order) {
   }).catch((err) => console.error("Admin email failed:", err));
 }
 
-export function sendCustomerConfirmationNotification(order: Order) {
+export async function sendCustomerConfirmationNotification(order: Order) {
   if (!order.customer_email) return;
   const resend = getResend();
   if (!resend) return;
 
-  resend.emails.send({
+  await resend.emails.send({
     from: fromEmail,
     to: order.customer_email,
     subject: `Pesanan #${order.order_number} Dikonfirmasi`,
@@ -89,12 +89,12 @@ export function sendCustomerConfirmationNotification(order: Order) {
   }).catch((err) => console.error("Customer confirmation email failed:", err));
 }
 
-export function sendCustomerShippingNotification(order: Order) {
+export async function sendCustomerShippingNotification(order: Order) {
   if (!order.customer_email) return;
   const resend = getResend();
   if (!resend) return;
 
-  resend.emails.send({
+  await resend.emails.send({
     from: fromEmail,
     to: order.customer_email,
     subject: `Pesanan #${order.order_number} Sedang Dikirim`,

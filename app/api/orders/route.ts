@@ -164,8 +164,8 @@ export async function POST(request: Request) {
       }
     }
 
-    // --- Send admin notification email (fire-and-forget) ---
-    sendAdminOrderAlert({
+    // --- Send admin notification email ---
+    await sendAdminOrderAlert({
       ...data,
       customer_name: customer_name.trim(),
       customer_phone: phoneClean,

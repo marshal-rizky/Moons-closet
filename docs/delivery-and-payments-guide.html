@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panduan Pembayaran & Pengiriman — Toko Baju Online</title>
+<style>
+  @media print {
+    body { font-size: 11pt; }
+    h1 { page-break-before: always; }
+    h1:first-of-type { page-break-before: avoid; }
+    table { page-break-inside: avoid; }
+    pre { page-break-inside: avoid; }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.7;
+    color: #1a1a1a;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 20px;
+    background: #fff;
+  }
+  h1 {
+    font-size: 1.8em;
+    margin: 48px 0 8px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid #1a1a1a;
+  }
+  h2 {
+    font-size: 1.35em;
+    margin: 36px 0 12px;
+    color: #2563eb;
+  }
+  h3 {
+    font-size: 1.1em;
+    margin: 24px 0 8px;
+  }
+  p, li { margin-bottom: 8px; }
+  ul, ol { padding-left: 24px; margin-bottom: 16px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.9em;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px 10px;
+    text-align: left;
+  }
+  th { background: #f3f4f6; font-weight: 600; }
+  tr:nth-child(even) { background: #f9fafb; }
+  pre {
+    background: #f3f4f6;
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 0.85em;
+    line-height: 1.5;
+    margin: 16px 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  code {
+    background: #f3f4f6;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+  strong { color: #111; }
+  hr {
+    border: none;
+    border-top: 1px solid #e5e7eb;
+    margin: 32px 0;
+  }
+  .title-block {
+    text-align: center;
+    padding: 48px 0 32px;
+    border-bottom: 3px solid #1a1a1a;
+    margin-bottom: 32px;
+  }
+  .title-block h1 {
+    border: none;
+    margin: 0;
+    padding: 0;
+    font-size: 2em;
+  }
+  .title-block p { color: #666; margin-top: 8px; }
+  .highlight {
+    background: #eff6ff;
+    border-left: 4px solid #2563eb;
+    padding: 12px 16px;
+    margin: 16px 0;
+    border-radius: 0 8px 8px 0;
+  }
+  .warn {
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    padding: 12px 16px;
+    margin: 16px 0;
+    border-radius: 0 8px 8px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <h1>Panduan Pembayaran &amp; Pengiriman</h1>
+  <p><strong>Toko Baju Online di Indonesia</strong></p>
+  <p>Mei 2026 &mdash; Referensi untuk Pemilik Toko</p>
+</div>
+
+<!-- ============ BAGIAN 1 ============ -->
+<h1>Bagian 1: Pembayaran</h1>
+
+<h2>Cara Orang Indonesia Bayar Online</h2>
+<p>Indonesia punya ekosistem pembayaran digital paling beragam di Asia Tenggara. Kalau kamu tidak menyediakan metode pembayaran yang tepat, calon pembeli batal checkout.</p>
+
+<h3>Metode Pembayaran yang Umum</h3>
+<table>
+  <tr><th>Metode</th><th>Popularitas</th><th>Siapa yang Pakai</th><th>Cocok untuk</th></tr>
+  <tr><td><strong>QRIS</strong></td><td>~35-40%</td><td>Semua umur, kota &amp; desa</td><td>Rp 50rb - 500rb</td></tr>
+  <tr><td><strong>Transfer Bank (VA)</strong></td><td>~25-30%</td><td>Semua umur</td><td>Rp 100rb - 5jt</td></tr>
+  <tr><td><strong>E-Wallet</strong></td><td>~20-25%</td><td>Anak muda 18-35</td><td>Rp 20rb - 1jt</td></tr>
+  <tr><td><strong>Kartu Kredit/Debit</strong></td><td>~5-8%</td><td>Urban, mampu</td><td>Rp 200rb+</td></tr>
+  <tr><td><strong>Minimarket</strong></td><td>~3-5%</td><td>Tidak punya rekening</td><td>Rp 50rb - 500rb</td></tr>
+  <tr><td><strong>Paylater/Cicilan</strong></td><td>~5-8%</td><td>Usia 20-35</td><td>Rp 200rb - 2jt</td></tr>
+</table>
+
+<h3>Apa Itu QRIS?</h3>
+<p>QRIS (Quick Response Code Indonesian Standard) adalah standar QR payment dari Bank Indonesia.</p>
+<div class="highlight">
+  <strong>Yang perlu kamu tahu:</strong>
+  <ul>
+    <li><strong>Satu QR untuk semua aplikasi.</strong> Pembeli bisa scan pakai GoPay, OVO, DANA, ShopeePay, LinkAja, atau aplikasi bank manapun</li>
+    <li><strong>Wajib sejak Januari 2023</strong> &mdash; semua penyedia pembayaran harus support</li>
+    <li><strong>Biaya rendah:</strong> Maksimal 0.7% per transaksi. Pesanan Rp 200.000 = fee hanya Rp 1.400</li>
+    <li><strong>Uang masuk cepat:</strong> Biasanya hari yang sama atau besoknya</li>
+    <li><strong>Dynamic QR:</strong> Setiap pesanan dapat QR unik dengan nominal otomatis</li>
+  </ul>
+</div>
+
+<p><strong>Contoh pengalaman pembeli:</strong></p>
+<ol>
+  <li>Klik "Bayar" di website kamu</li>
+  <li>Muncul popup pembayaran</li>
+  <li>Pilih "QRIS"</li>
+  <li>Muncul QR code di layar</li>
+  <li>Buka GoPay/OVO/DANA di HP</li>
+  <li>Scan QR</li>
+  <li>Konfirmasi di aplikasi</li>
+  <li>Selesai &mdash; total waktu sekitar <strong>30 detik</strong></li>
+</ol>
+
+<h3>E-Wallet di Indonesia</h3>
+<table>
+  <tr><th>Wallet</th><th>Pemilik</th><th>Pengguna</th><th>Catatan</th></tr>
+  <tr><td>GoPay</td><td>GoTo (Gojek+Tokopedia)</td><td>40 juta+</td><td>Paling kuat di transport &amp; food</td></tr>
+  <tr><td>OVO</td><td>Grab + Bank Nobu</td><td>35 juta+</td><td>Populer di retail</td></tr>
+  <tr><td>DANA</td><td>Ant Group</td><td>30 juta+</td><td>Kuat di peer-to-peer</td></tr>
+  <tr><td>ShopeePay</td><td>Sea Group (Shopee)</td><td>30 juta+</td><td>Dominan di e-commerce</td></tr>
+  <tr><td>LinkAja</td><td>Bank BUMN</td><td>15 juta+</td><td>Pembayaran pemerintah</td></tr>
+</table>
+<div class="highlight"><strong>Penting:</strong> Semua e-wallet di atas bisa scan QRIS. Jadi cukup support QRIS = otomatis support semua e-wallet.</div>
+
+<h3>Transfer Bank / Virtual Account (VA)</h3>
+<p>Virtual Account = nomor rekening sementara khusus untuk satu transaksi. Pembeli transfer ke nomor itu, sistem otomatis konfirmasi.</p>
+<p>Bank yang didukung: BCA, BNI, BRI, Mandiri, Permata, CIMB Niaga, dll.</p>
+<p>Ini masih metode <strong>paling dipercaya</strong> untuk pembelian di atas Rp 500.000.</p>
+
+<h3>Bayar di Minimarket</h3>
+<p>Pembeli dapat kode pembayaran, lalu bayar tunai di Alfamart atau Indomaret. Melayani orang yang belum punya rekening bank dan remaja.</p>
+
+<h3>Paylater / Cicilan (BNPL)</h3>
+<p>Makin populer untuk fashion: Kredivo, Akulaku, GoPay Later, ShopeePay Later.</p>
+<p>BNPL bisa <strong>meningkatkan nilai rata-rata pesanan 20-40%</strong> untuk toko baju. Orang lebih berani beli kalau bisa cicil.</p>
+
+<hr>
+
+<h2>Payment Gateway: Perantara Pembayaran</h2>
+<p>Payment gateway menghubungkan website kamu dengan semua metode pembayaran. Kamu hanya perlu integrasi ke <strong>SATU gateway</strong>, dan otomatis bisa terima dari QRIS, transfer bank, e-wallet, kartu kredit, dll.</p>
+
+<h3>Midtrans (Rekomendasi)</h3>
+<p><strong>Pemilik:</strong> GoTo Group (Gojek + Tokopedia) &nbsp;|&nbsp; <strong>Website:</strong> midtrans.com</p>
+<ul>
+  <li>Payment gateway paling populer di Indonesia</li>
+  <li>Satu integrasi = semua metode pembayaran</li>
+  <li>Dokumentasi lengkap dalam Bahasa Indonesia</li>
+  <li>Fitur "Snap" &mdash; popup pembayaran langsung di website kamu</li>
+  <li>Sandbox (testing) gratis</li>
+  <li>Berlisensi Bank Indonesia</li>
+</ul>
+
+<h3>Biaya Midtrans</h3>
+<table>
+  <tr><th>Metode</th><th>Biaya per Transaksi</th></tr>
+  <tr><td>QRIS</td><td>0.7%</td></tr>
+  <tr><td>Transfer Bank / VA</td><td>Rp 4.000 flat</td></tr>
+  <tr><td>Kartu Kredit</td><td>2.9% + Rp 2.000</td></tr>
+  <tr><td>E-Wallet</td><td>2%</td></tr>
+  <tr><td>Biaya bulanan</td><td><strong>Gratis</strong></td></tr>
+  <tr><td>Biaya setup</td><td><strong>Gratis</strong></td></tr>
+</table>
+<p><strong>Contoh:</strong> Pesanan Rp 390.000 via QRIS &rarr; fee Midtrans = Rp 2.730. Kamu terima Rp 387.270.</p>
+
+<h3>Alternatif Lain</h3>
+<ul>
+  <li><strong>Xendit</strong> (xendit.co) &mdash; API bagus, multi-negara, biaya sedikit lebih tinggi</li>
+  <li><strong>Doku</strong> (doku.com) &mdash; Tertua di Indonesia (2007), tapi dokumentasi kurang modern</li>
+</ul>
+
+<div class="highlight">
+  <strong>Rekomendasi: Pakai Midtrans</strong> karena satu integrasi untuk semua metode, popup Snap di website sendiri, biaya QRIS terendah (0.7%), dan tanpa biaya bulanan.
+</div>
+
+<hr>
+
+<h2>Cara Kerja Pembayaran (Dari Sisi Pembeli)</h2>
+<pre>
+Pembeli klik "Bayar Sekarang"
+    &darr;
+Muncul popup Midtrans Snap di layar
+    &darr;
+Pembeli pilih metode: QRIS / Transfer Bank / E-Wallet / dll.
+    &darr;
+Kalau QRIS:       scan QR &rarr; konfirmasi di app &rarr; selesai (30 detik)
+Kalau VA:         dapat nomor rekening &rarr; transfer via m-banking (2-5 menit)
+Kalau E-Wallet:   redirect ke app &rarr; konfirmasi (30 detik)
+Kalau Minimarket: dapat kode &rarr; ke Alfamart/Indomaret (kapan saja)
+    &darr;
+Website otomatis update: "Pembayaran Berhasil!"
+    &darr;
+Kamu (admin) terima email: "Pesanan baru sudah dibayar!"
+    &darr;
+Uang masuk ke rekeningmu (T+1 untuk QRIS, T+2 untuk VA)
+</pre>
+
+<h2>Cara Daftar Midtrans</h2>
+<ol>
+  <li>Buka <strong>dashboard.midtrans.com</strong></li>
+  <li>Daftar akun (gratis)</li>
+  <li>Langsung dapat akses <strong>Sandbox</strong> untuk testing</li>
+  <li>Untuk terima pembayaran sungguhan, ajukan <strong>akun Production</strong></li>
+</ol>
+
+<p><strong>Syarat akun Production (KYC):</strong></p>
+<ul>
+  <li>KTP pemilik usaha</li>
+  <li>NIB / SIUP (kalau ada, tapi perorangan juga bisa)</li>
+  <li>Nomor rekening bank untuk pencairan dana</li>
+  <li>Website yang sudah live</li>
+  <li>Proses approval biasanya <strong>3-7 hari kerja</strong></li>
+</ul>
+<div class="warn"><strong>Tips:</strong> Daftar sekarang karena ada waktu tunggu approval. Kamu bisa testing dengan Sandbox sambil menunggu.</div>
+
+<!-- ============ BAGIAN 2 ============ -->
+<h1>Bagian 2: Pengiriman</h1>
+
+<h2>Kurir di Indonesia</h2>
+
+<h3>Kurir Nasional</h3>
+<table>
+  <tr><th>Kurir</th><th>Kekuatan</th><th>Estimasi</th><th>Biaya (Jawa)</th><th>Biaya (Luar Jawa)</th></tr>
+  <tr><td><strong>JNE</strong></td><td>Paling dipercaya, terluas</td><td>2-7 hari</td><td>Rp 9rb - 25rb</td><td>Rp 20rb - 80rb</td></tr>
+  <tr><td><strong>J&amp;T Express</strong></td><td>Cepat, fokus e-commerce</td><td>2-5 hari</td><td>Rp 8rb - 22rb</td><td>Rp 18rb - 70rb</td></tr>
+  <tr><td><strong>SiCepat</strong></td><td>Sangat cepat, kompetitif</td><td>1-4 hari</td><td>Rp 9rb - 24rb</td><td>Rp 19rb - 75rb</td></tr>
+  <tr><td><strong>Anteraja</strong></td><td>Kompetitif</td><td>2-5 hari</td><td>Rp 8rb - 22rb</td><td>Rp 18rb - 70rb</td></tr>
+  <tr><td><strong>TIKI</strong></td><td>Legacy, terpercaya</td><td>2-7 hari</td><td>Rp 9rb - 25rb</td><td>Rp 20rb - 80rb</td></tr>
+  <tr><td><strong>Pos Indonesia</strong></td><td>Paling murah</td><td>5-14 hari</td><td>Rp 7rb - 15rb</td><td>Rp 12rb - 40rb</td></tr>
+</table>
+<p><em>Biaya untuk paket ~500g. Berat dan jarak mempengaruhi harga.</em></p>
+
+<h3>Tipe Layanan</h3>
+<table>
+  <tr><th>Tipe</th><th>Waktu</th><th>Contoh</th><th>Harga</th></tr>
+  <tr><td><strong>Ekonomi</strong></td><td>5-14 hari</td><td>JNE OKE, Pos Indonesia</td><td>Paling murah</td></tr>
+  <tr><td><strong>Reguler</strong></td><td>2-7 hari</td><td>JNE REG, J&amp;T EZ, SiCepat REG</td><td>Standar</td></tr>
+  <tr><td><strong>Express</strong></td><td>1-2 hari</td><td>JNE YES, J&amp;T Express, SiCepat BEST</td><td>1.5-2x reguler</td></tr>
+  <tr><td><strong>Same-Day</strong></td><td>Hitungan jam</td><td>GoSend, GrabExpress</td><td>Rp 15rb - 50rb</td></tr>
+</table>
+
+<h3>Yang Diharapkan Pembeli Indonesia</h3>
+<ol>
+  <li><strong>Ongkir terlihat sebelum bayar</strong> &mdash; pembeli ingin tahu total termasuk ongkir</li>
+  <li><strong>Pilihan kurir</strong> &mdash; minimal JNE, J&amp;T, SiCepat</li>
+  <li><strong>Nomor resi</strong> &mdash; bisa dilacak setelah dikirim</li>
+  <li><strong>Gratis ongkir</strong> &mdash; sangat umum, sudah jadi ekspektasi</li>
+  <li><strong>Estimasi waktu</strong> &mdash; "sampai dalam 2-3 hari"</li>
+</ol>
+
+<hr>
+
+<h2>RajaOngkir: Layanan Cek Ongkir</h2>
+<p>RajaOngkir (rajaongkir.com) adalah layanan API paling populer untuk mengecek tarif pengiriman. Semua developer e-commerce Indonesia pakai ini.</p>
+
+<p><strong>Cara kerja:</strong></p>
+<ol>
+  <li>Pembeli pilih kota tujuan</li>
+  <li>Website kirim: kota asal + kota tujuan + berat paket</li>
+  <li>RajaOngkir balikin: daftar kurir beserta harga dan estimasi</li>
+  <li>Pembeli pilih kurir</li>
+  <li>Ongkir ditambahkan ke total pesanan</li>
+</ol>
+
+<h3>Harga RajaOngkir</h3>
+<table>
+  <tr><th>Paket</th><th>Harga</th><th>Kurir</th><th>Fitur</th></tr>
+  <tr><td>Starter</td><td><strong>Gratis</strong></td><td>JNE, POS, TIKI saja</td><td>Cek ongkir dasar</td></tr>
+  <tr><td>Basic</td><td><strong>Rp 50.000/bulan</strong></td><td>+ J&amp;T, SiCepat, Anteraja</td><td>Level kecamatan, lacak resi</td></tr>
+  <tr><td>Pro</td><td>Rp 150.000/bulan</td><td>Semua + internasional</td><td>Fitur lengkap</td></tr>
+</table>
+<div class="highlight"><strong>Rekomendasi:</strong> Pakai Basic (Rp 50rb/bulan) karena J&amp;T dan SiCepat wajib ada untuk toko online.</div>
+
+<hr>
+
+<h2>Strategi Gratis Ongkir</h2>
+<p>Gratis ongkir adalah strategi marketing paling efektif di e-commerce Indonesia.</p>
+
+<h3>Opsi 1: Minimum Pembelian (Rekomendasi)</h3>
+<pre>Belanja &ge; Rp 300.000 &rarr; Gratis ongkir
+Belanja &lt; Rp 300.000 &rarr; Bayar ongkir sendiri</pre>
+<p><strong>Pro:</strong> Mendorong pembeli menambah barang. <strong>Con:</strong> Kamu tanggung biaya ongkir.</p>
+
+<h3>Opsi 2: Subsidi Ongkir</h3>
+<pre>Belanja &ge; Rp 200.000 &rarr; Kamu bayar ongkir sampai Rp 20.000, sisa ditanggung pembeli</pre>
+
+<h3>Opsi 3: Ongkir Flat Rate</h3>
+<pre>Semua pengiriman = Rp 15.000 (kamu tanggung selisihnya)</pre>
+
+<div class="highlight">
+  <strong>Rekomendasi untuk toko baju:</strong> Opsi 1 dengan threshold Rp 300.000. Rata-rata harga baju kamu Rp 165rb-225rb, jadi pembeli butuh beli 2 item untuk gratis ongkir. Ini mendorong average order value naik.
+</div>
+
+<h3>Berapa Biaya yang Kamu Tanggung?</h3>
+<table>
+  <tr><th>Tujuan</th><th>Ongkir Asli</th><th>Kamu Tanggung</th><th>Revenue (dari Rp 390rb)</th></tr>
+  <tr><td>Jakarta &rarr; Surabaya</td><td>~Rp 18.000</td><td>Rp 18.000</td><td>Rp 372.000</td></tr>
+  <tr><td>Jakarta &rarr; Medan</td><td>~Rp 30.000</td><td>Rp 30.000</td><td>Rp 360.000</td></tr>
+  <tr><td>Jakarta &rarr; Papua</td><td>~Rp 65.000</td><td>Rp 65.000</td><td>Rp 325.000</td></tr>
+</table>
+<p>Masih margin sehat. Beberapa toko membatasi gratis ongkir hanya untuk Jawa jika margin tipis.</p>
+
+<hr>
+
+<h2>Same-Day Delivery (GoSend / GrabExpress)</h2>
+<p>Kalau toko dan pembeli di kota yang sama, same-day delivery bisa jadi keunggulan kompetitif besar.</p>
+<ol>
+  <li>Pembeli pilih "Kirim Hari Ini" saat checkout</li>
+  <li>Driver GoSend/Grab otomatis dikirim ke lokasi toko</li>
+  <li>Driver ambil paket, kirim ke pembeli (1-3 jam)</li>
+</ol>
+<p><strong>Biaya:</strong> Rp 15.000 - 50.000 tergantung jarak.<br>
+<strong>Syarat:</strong> Satu kota, jam operasional, paket &lt; 5kg.</p>
+<div class="warn"><strong>Rekomendasi:</strong> Tambahkan setelah kurir reguler sudah jalan lancar.</div>
+
+<!-- ============ BAGIAN 3 ============ -->
+<h1>Bagian 3: Alur Lengkap</h1>
+
+<h2>Perjalanan Pesanan dari Awal sampai Selesai</h2>
+<pre>
+PEMBELI                              KAMU (ADMIN)
+
+ 1. Lihat-lihat produk
+ 2. Tambah ke keranjang
+ 3. Buka checkout
+ 4. Isi nama, HP, email, alamat
+ 5. Pilih provinsi &amp; kota
+ 6. Lihat opsi kurir &amp; harga
+ 7. Pilih kurir (misal JNE REG Rp 18.000)
+ 8. Total: Rp 390.000 + Rp 18.000 = Rp 408.000
+    (atau Rp 390.000 kalau gratis ongkir)
+ 9. Klik "Bayar Sekarang"
+10. Popup Midtrans &rarr; pilih QRIS &rarr; scan &rarr; bayar
+11. "Pembayaran Berhasil!"
+12. Terima email konfirmasi         Terima email: "Pesanan baru, sudah dibayar!"
+
+                                    13. Buka admin &rarr; lihat pesanan
+                                    14. Siapkan barang, packing
+                                    15. Klik "Konfirmasi"
+16. Terima email: "Pesanan dikonfirmasi"
+
+                                    17. Kirim via JNE, dapat resi
+                                    18. Input resi di admin
+                                    19. Klik "Kirim"
+20. Terima email: resi + link tracking
+21. Lacak paket di website JNE
+22. Paket sampai!
+                                    23. Tandai "Selesai"
+
+SELESAI
+</pre>
+
+<hr>
+
+<h2>Alur Uang</h2>
+
+<h3>Pembeli bayar ongkir</h3>
+<pre>
+Pembeli bayar: Rp 408.000 (produk Rp 390.000 + ongkir Rp 18.000)
+
+Masuk ke rekeningmu (dari Midtrans):
+  Rp 408.000 - Rp 2.856 (fee QRIS 0.7%) = Rp 405.144
+
+Kamu bayar JNE: Rp 18.000
+
+Keuntungan bersih: Rp 387.144
+</pre>
+
+<h3>Gratis ongkir</h3>
+<pre>
+Pembeli bayar: Rp 390.000 (gratis ongkir)
+
+Masuk ke rekeningmu:
+  Rp 390.000 - Rp 2.730 (fee QRIS) = Rp 387.270
+
+Kamu bayar JNE: Rp 18.000 (dari kantong sendiri)
+
+Keuntungan bersih: Rp 369.270
+</pre>
+
+<hr>
+
+<h2>Total Biaya Operasional Bulanan</h2>
+<table>
+  <tr><th>Layanan</th><th>Biaya Bulanan</th><th>Biaya per Transaksi</th></tr>
+  <tr><td>Vercel (hosting)</td><td>Gratis</td><td>&mdash;</td></tr>
+  <tr><td>Supabase (database)</td><td>Gratis</td><td>&mdash;</td></tr>
+  <tr><td>Resend (email)</td><td>Gratis (3.000/bulan)</td><td>&mdash;</td></tr>
+  <tr><td>RajaOngkir Basic</td><td>Rp 50.000</td><td>&mdash;</td></tr>
+  <tr><td>Midtrans</td><td>Gratis</td><td>0.7% (QRIS), Rp 4rb (VA)</td></tr>
+  <tr><th>Total biaya tetap</th><th>Rp 50.000/bulan</th><th>~0.7% per penjualan</th></tr>
+</table>
+<div class="highlight">
+  <strong>Sangat murah.</strong> Sebagai perbandingan:<br>
+  &bull; Shopee: biaya admin 2-6% per transaksi<br>
+  &bull; Tokopedia: biaya layanan 1-5% per transaksi<br>
+  &bull; Website sendiri (kamu): hanya ~0.7%
+</div>
+
+<!-- ============ BAGIAN 4 ============ -->
+<h1>Bagian 4: Yang Perlu Kamu Lakukan</h1>
+
+<h2>Yang Perlu Kamu Daftar</h2>
+
+<h3>1. Midtrans (Pembayaran)</h3>
+<ul>
+  <li><strong>Buka:</strong> dashboard.midtrans.com</li>
+  <li><strong>Daftar:</strong> Gratis, langsung dapat sandbox</li>
+  <li><strong>Production:</strong> Siapkan KTP + NIB/SIUP (opsional) + rekening</li>
+  <li><strong>Waktu approval:</strong> 3-7 hari kerja</li>
+</ul>
+
+<h3>2. RajaOngkir (Cek Ongkir)</h3>
+<ul>
+  <li><strong>Buka:</strong> rajaongkir.com</li>
+  <li><strong>Daftar:</strong> Gratis (Starter) atau Rp 50rb/bulan (Basic)</li>
+  <li>Langsung aktif setelah bayar</li>
+</ul>
+
+<h3>3. Resend &mdash; Verify Domain (Email)</h3>
+<ul>
+  <li>Sudah punya akun (yang sekarang dipakai)</li>
+  <li>Verify domain custom supaya email bisa ke siapa saja</li>
+  <li>Resend Dashboard &rarr; Domains &rarr; Add Domain &rarr; Ikuti DNS</li>
+</ul>
+
+<hr>
+
+<h2>Urutan Implementasi</h2>
+
+<h3>Fase 1: Pembayaran (Prioritas Tertinggi)</h3>
+<p><strong>Kenapa duluan:</strong> Saat ini pesanan masuk tanpa pembayaran &mdash; admin harus konfirmasi manual. Tidak scalable.</p>
+<ul>
+  <li>Daftar Midtrans</li>
+  <li>Integrasi Snap ke checkout</li>
+  <li>QRIS + Transfer Bank + E-Wallet langsung aktif</li>
+  <li>Pengiriman masih manual</li>
+</ul>
+<p><strong>Hasil:</strong> Pembeli bayar langsung di website. Uang masuk otomatis.</p>
+
+<h3>Fase 2: Ongkir Otomatis</h3>
+<ul>
+  <li>Daftar RajaOngkir</li>
+  <li>Tambah pilihan provinsi/kota di checkout</li>
+  <li>Tampilkan opsi kurir dan harga</li>
+  <li>Gratis ongkir di atas Rp 300.000</li>
+</ul>
+<p><strong>Hasil:</strong> Pengalaman seperti Shopee/Tokopedia.</p>
+
+<h3>Fase 3: Resi &amp; Tracking</h3>
+<ul>
+  <li>Admin input resi di panel</li>
+  <li>Email otomatis kirim resi + link tracking</li>
+</ul>
+<p><strong>Hasil:</strong> Pembeli lacak paket sendiri tanpa tanya WhatsApp.</p>
+
+<h3>Fase 4: Polish (Setelah Stabil)</h3>
+<ul>
+  <li>Paylater/Cicilan (Kredivo)</li>
+  <li>Same-day delivery (GoSend)</li>
+  <li>Halaman tracking di website</li>
+  <li>Notifikasi WhatsApp otomatis</li>
+</ul>
+
+<!-- ============ BAGIAN 5 ============ -->
+<h1>Bagian 5: FAQ</h1>
+
+<h3>Berapa lama uang sampai ke rekeningku?</h3>
+<ul>
+  <li><strong>QRIS:</strong> T+1 (besok)</li>
+  <li><strong>Transfer Bank/VA:</strong> T+2 (2 hari kerja)</li>
+  <li><strong>Kartu Kredit:</strong> T+2</li>
+</ul>
+
+<h3>Bagaimana kalau pembeli tidak bayar?</h3>
+<ul>
+  <li>QRIS: QR expired setelah 15 menit</li>
+  <li>VA: expired setelah 24 jam</li>
+  <li>Pesanan otomatis batal, stok dikembalikan</li>
+</ul>
+
+<h3>Bagaimana kalau ada refund?</h3>
+<ul>
+  <li>Proses refund melalui Midtrans Dashboard</li>
+  <li>QRIS/e-wallet: 1-3 hari</li>
+  <li>Transfer bank: manual ke rekening pembeli</li>
+</ul>
+
+<h3>Perlu badan usaha (PT/CV)?</h3>
+<p><strong>Tidak wajib.</strong> Midtrans menerima perorangan dengan KTP. Tapi kalau punya NIB/SIUP, approval lebih cepat.</p>
+
+<h3>Berapa minimal transaksi?</h3>
+<p>QRIS: minimal Rp 10.000. VA/transfer bank: tidak ada minimal.</p>
+
+<h3>Bagaimana dengan COD?</h3>
+<div class="warn">
+  <strong>Tidak direkomendasikan untuk awal.</strong> Rate penolakan COD di Indonesia 10-20%. Kamu tetap bayar ongkir walau paket ditolak. Lebih baik dorong pembeli bayar online dulu.
+</div>
+
+<h3>Kalau pesanan masih sedikit, perlu semua ini?</h3>
+<p><strong>Fase 1 (Midtrans) sudah cukup untuk mulai.</strong> Ongkir bisa manual dulu via WhatsApp. Upgrade ke RajaOngkir saat kewalahan hitung ongkir manual.</p>
+
+<hr>
+
+<h2>Link Penting</h2>
+<table>
+  <tr><th>Layanan</th><th>URL</th><th>Untuk Apa</th></tr>
+  <tr><td>Midtrans</td><td>dashboard.midtrans.com</td><td>Kelola pembayaran</td></tr>
+  <tr><td>RajaOngkir</td><td>rajaongkir.com</td><td>API ongkir</td></tr>
+  <tr><td>Resend</td><td>resend.com</td><td>Email notifikasi</td></tr>
+  <tr><td>Supabase</td><td>supabase.com/dashboard</td><td>Database</td></tr>
+  <tr><td>Vercel</td><td>vercel.com/dashboard</td><td>Hosting</td></tr>
+  <tr><td>JNE Tracking</td><td>jne.co.id</td><td>Lacak paket JNE</td></tr>
+  <tr><td>J&amp;T Tracking</td><td>jet.co.id</td><td>Lacak paket J&amp;T</td></tr>
+  <tr><td>SiCepat Tracking</td><td>sicepat.com</td><td>Lacak paket SiCepat</td></tr>
+</table>
+
+<hr>
+
+<h2>Istilah</h2>
+<table>
+  <tr><th>Istilah</th><th>Arti</th></tr>
+  <tr><td>QRIS</td><td>Standar QR payment dari Bank Indonesia</td></tr>
+  <tr><td>VA</td><td>Virtual Account &mdash; rekening sementara untuk pembayaran</td></tr>
+  <tr><td>MDR</td><td>Merchant Discount Rate &mdash; biaya per transaksi</td></tr>
+  <tr><td>Resi</td><td>Nomor tracking pengiriman</td></tr>
+  <tr><td>Ongkir</td><td>Ongkos Kirim</td></tr>
+  <tr><td>COD</td><td>Cash on Delivery &mdash; bayar di tempat</td></tr>
+  <tr><td>BNPL</td><td>Buy Now Pay Later &mdash; cicilan</td></tr>
+  <tr><td>Snap</td><td>Popup pembayaran Midtrans</td></tr>
+  <tr><td>KYC</td><td>Know Your Customer &mdash; verifikasi identitas</td></tr>
+  <tr><td>T+1</td><td>Uang masuk 1 hari kerja setelah transaksi</td></tr>
+  <tr><td>Sandbox</td><td>Lingkungan testing (tanpa uang sungguhan)</td></tr>
+</table>
+
+<hr>
+<p style="text-align:center; color:#999; margin-top:32px; font-size:0.85em;">
+  Dokumen ini adalah referensi perencanaan. Semua biaya bersifat perkiraan per Mei 2026.
+</p>
+
+</body>
+</html>

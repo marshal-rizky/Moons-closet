@@ -18,9 +18,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   if (status === "confirmed") {
-    sendCustomerConfirmationNotification(data as Order);
+    await sendCustomerConfirmationNotification(data as Order);
   } else if (status === "shipped") {
-    sendCustomerShippingNotification(data as Order);
+    await sendCustomerShippingNotification(data as Order);
   }
 
   return NextResponse.json(data);
