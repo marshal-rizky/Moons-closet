@@ -1,8 +1,13 @@
+export type VariantSize = {
+  size: string;
+  stock: number;
+};
+
 export type ProductVariant = {
   color: string;
   hex: string;
   images: string[];
-  stock: number;
+  sizes: VariantSize[]; // per-size stock for this color
 };
 
 export type Product = {

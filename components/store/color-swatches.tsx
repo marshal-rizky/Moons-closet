@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { variantStock } from "@/lib/variants";
 import type { ProductVariant } from "@/lib/types";
 
 export function ColorSwatches({
@@ -18,13 +19,14 @@ export function ColorSwatches({
       <div className="mt-3 flex flex-wrap gap-1">
         {variants.map((v) => {
           const active = v.color === selected.color;
+          const soldOut = variantStock(v) <= 0;
           return (
             <Link
               key={v.color}
               href={`/product/${slug}?color=${encodeURIComponent(v.color)}`}
               replace
               scroll={false}
-              aria-label={`Warna ${v.color}${v.stock <= 0 ? " (stok habis)" : ""}`}
+              aria-label={`Warna ${v.color}${soldOut ? " (stok habis)" : ""}`}
               aria-current={active ? "true" : undefined}
               className="grid h-11 w-11 place-items-center"
             >
@@ -33,10 +35,10 @@ export function ColorSwatches({
                   active
                     ? "border-foreground outline outline-1 outline-offset-2 outline-foreground"
                     : "border-foreground/20 hover:border-foreground"
-                } ${v.stock <= 0 ? "opacity-40" : ""}`}
+                } ${soldOut ? "opacity-40" : ""}`}
                 style={{ backgroundColor: v.hex }}
               >
-                {v.stock <= 0 && (
+                {soldOut && (
                   <span
                     aria-hidden
                     className="absolute inset-0 bg-[linear-gradient(to_top_right,transparent_calc(50%-0.5px),var(--foreground)_50%,transparent_calc(50%+0.5px))]"

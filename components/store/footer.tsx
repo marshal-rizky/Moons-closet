@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { siteConfig } from "@/lib/config";
+import { CATEGORIES } from "@/lib/categories";
 
 export function Footer() {
   return (
@@ -17,9 +18,11 @@ export function Footer() {
 
           <FooterCol heading="Belanja">
             <Link href="/shop">Semua</Link>
-            <Link href="/shop?category=atasan">Atasan</Link>
-            <Link href="/shop?category=bawahan">Bawahan</Link>
-            <Link href="/shop?category=dress">Dress</Link>
+            {CATEGORIES.map((c) => (
+              <Link key={c.slug} href={`/shop?category=${c.slug}`}>
+                {c.label}
+              </Link>
+            ))}
           </FooterCol>
 
           <FooterCol heading="Toko">

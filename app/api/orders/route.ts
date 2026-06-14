@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendAdminOrderAlert } from "@/lib/email";
+import { sumVariantStock } from "@/lib/validate-variants";
 import type { Order, ProductVariant } from "@/lib/types";
 
 export async function POST(request: Request) {
@@ -132,15 +133,17 @@ export async function POST(request: Request) {
             { status: 400 }
           );
         }
-        if (item.quantity > variant.stock) {
+        const sizeEntry = (variant.sizes ?? []).find((s) => s.size === item.size);
+        if (!sizeEntry) {
           return NextResponse.json(
-            { error: `Stok tidak cukup untuk "${product.name}" warna ${variant.color}. Tersedia: ${variant.stock}.` },
+            { error: `Ukuran "${item.size}" tidak tersedia untuk "${product.name}" warna ${variant.color}.` },
             { status: 400 }
           );
         }
-      } else if (item.quantity > product.stock) {
+        // per-(color,size) stock is checked after aggregation
+      } else if (!product.sizes.includes(item.size)) {
         return NextResponse.json(
-          { error: `Stok tidak cukup untuk "${product.name}". Tersedia: ${product.stock}.` },
+          { error: `Ukuran "${item.size}" tidak tersedia untuk produk "${product.name}".` },
           { status: 400 }
         );
       }
@@ -158,26 +161,41 @@ export async function POST(request: Request) {
       total += product.price * item.quantity;
     }
 
-    // --- Aggregate quantities per (product, color) — multiple sizes of the same
-    // color are separate cart lines but draw from one stock pool ---
-    const aggregated = new Map<string, { product_id: string; color: string | null; quantity: number }>();
+    // --- Aggregate quantities per (product, color, size) cell ---
+    const cells = new Map<
+      string,
+      { product_id: string; color: string | null; size: string; quantity: number }
+    >();
     for (const oi of orderItems) {
-      const key = `${oi.product_id}::${oi.color ?? ""}`;
-      const entry = aggregated.get(key);
+      const key = `${oi.product_id}::${oi.color ?? ""}::${oi.size}`;
+      const entry = cells.get(key);
       if (entry) entry.quantity += oi.quantity;
-      else aggregated.set(key, { product_id: oi.product_id, color: oi.color, quantity: oi.quantity });
+      else cells.set(key, { product_id: oi.product_id, color: oi.color, size: oi.size, quantity: oi.quantity });
     }
 
-    for (const { product_id, color, quantity } of aggregated.values()) {
-      const product = productMap.get(product_id)!;
+    // --- Stock check: variant products per (color,size); legacy per product ---
+    const legacyByProduct = new Map<string, number>();
+    for (const c of cells.values()) {
+      const product = productMap.get(c.product_id)!;
       const variants = Array.isArray(product.variants) ? product.variants : [];
-      const pool = color
-        ? variants.find((v) => v.color === color)?.stock ?? 0
-        : product.stock;
-      if (quantity > pool) {
-        const label = color ? `"${product.name}" warna ${color}` : `"${product.name}"`;
+      if (variants.length > 0) {
+        const variant = variants.find((v) => v.color === c.color);
+        const pool = variant?.sizes?.find((s) => s.size === c.size)?.stock ?? 0;
+        if (c.quantity > pool) {
+          return NextResponse.json(
+            { error: `Stok tidak cukup untuk "${product.name}" warna ${c.color} ukuran ${c.size}. Tersedia: ${pool}.` },
+            { status: 400 }
+          );
+        }
+      } else {
+        legacyByProduct.set(c.product_id, (legacyByProduct.get(c.product_id) ?? 0) + c.quantity);
+      }
+    }
+    for (const [pid, qty] of legacyByProduct) {
+      const product = productMap.get(pid)!;
+      if (qty > product.stock) {
         return NextResponse.json(
-          { error: `Stok tidak cukup untuk ${label}. Tersedia: ${pool}.` },
+          { error: `Stok tidak cukup untuk "${product.name}". Tersedia: ${product.stock}.` },
           { status: 400 }
         );
       }
@@ -207,36 +225,50 @@ export async function POST(request: Request) {
       );
     }
 
-    // --- Decrement stock per product (read-modify-write; concurrent-order race
-    // is a pre-existing limitation, an RPC would fix it) ---
-    const byProduct = new Map<string, { color: string | null; quantity: number }[]>();
-    for (const { product_id, color, quantity } of aggregated.values()) {
-      const list = byProduct.get(product_id) ?? [];
-      list.push({ color, quantity });
-      byProduct.set(product_id, list);
-    }
+    // --- Decrement stock with optimistic concurrency: re-read the row, apply the
+    // decrement, and write only if the total stock hasn't changed since the read
+    // (`.eq("stock", fresh.stock)` guard). On a concurrent change the guard misses
+    // and we retry with fresh data — preventing lost updates without a DB lock. ---
+    const productIdsToUpdate = new Set([...cells.values()].map((c) => c.product_id));
+    for (const pid of productIdsToUpdate) {
+      const base = productMap.get(pid);
+      if (!base) continue;
+      const isVariant = Array.isArray(base.variants) && base.variants.length > 0;
 
-    for (const [productId, lines] of byProduct) {
-      const product = productMap.get(productId);
-      if (!product) continue;
-      const variants = Array.isArray(product.variants) ? product.variants : [];
+      for (let attempt = 0; attempt < 4; attempt++) {
+        const { data: fresh } = await supabase
+          .from("products")
+          .select("variants, stock")
+          .eq("id", pid)
+          .single();
+        if (!fresh) break;
 
-      if (variants.length > 0) {
-        const updatedVariants = variants.map((v) => {
-          const line = lines.find((l) => l.color === v.color);
-          return line ? { ...v, stock: v.stock - line.quantity } : v;
-        });
-        const newTotal = updatedVariants.reduce((sum, v) => sum + v.stock, 0);
-        await supabase
-          .from("products")
-          .update({ variants: updatedVariants, stock: newTotal })
-          .eq("id", productId);
-      } else {
-        const qty = lines.reduce((sum, l) => sum + l.quantity, 0);
-        await supabase
-          .from("products")
-          .update({ stock: product.stock - qty })
-          .eq("id", productId);
+        if (isVariant) {
+          const freshVariants = (fresh.variants ?? []) as ProductVariant[];
+          const updatedVariants = freshVariants.map((v) => ({
+            ...v,
+            sizes: (v.sizes ?? []).map((s) => {
+              const cell = cells.get(`${pid}::${v.color}::${s.size}`);
+              return cell ? { ...s, stock: Math.max(0, s.stock - cell.quantity) } : s;
+            }),
+          }));
+          const { data: upd } = await supabase
+            .from("products")
+            .update({ variants: updatedVariants, stock: sumVariantStock(updatedVariants) })
+            .eq("id", pid)
+            .eq("stock", fresh.stock)
+            .select("id");
+          if (upd && upd.length) break;
+        } else {
+          const qty = legacyByProduct.get(pid) ?? 0;
+          const { data: upd } = await supabase
+            .from("products")
+            .update({ stock: Math.max(0, fresh.stock - qty) })
+            .eq("id", pid)
+            .eq("stock", fresh.stock)
+            .select("id");
+          if (upd && upd.length) break;
+        }
       }
     }
 

@@ -8,11 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { CATEGORIES } from "@/lib/categories";
 import type { Product, ProductVariant } from "@/lib/types";
 
 const ALL_SIZES = ["S", "M", "L", "XL", "XXL"];
-
-const EMPTY_VARIANT: ProductVariant = { color: "", hex: "#1a1a1a", images: [], stock: 0 };
 
 type ProductFormProps = { product?: Product };
 
@@ -33,10 +32,26 @@ export function ProductForm({ product }: ProductFormProps) {
   const [error, setError] = useState("");
 
   const hasVariants = variants.length > 0;
-  const variantStockTotal = variants.reduce((sum, v) => sum + (v.stock || 0), 0);
+  const variantStockTotal = variants.reduce(
+    (sum, v) => sum + (v.sizes ?? []).reduce((a, s) => a + (s.stock || 0), 0),
+    0
+  );
 
   function updateVariant(index: number, patch: Partial<ProductVariant>) {
     setVariants((prev) => prev.map((v, i) => (i === index ? { ...v, ...patch } : v)));
+  }
+
+  function setVariantSizeStock(index: number, size: string, stock: number) {
+    setVariants((prev) =>
+      prev.map((v, i) => {
+        if (i !== index) return v;
+        const exists = v.sizes.some((s) => s.size === size);
+        const next = exists
+          ? v.sizes.map((s) => (s.size === size ? { ...s, stock } : s))
+          : [...v.sizes, { size, stock }];
+        return { ...v, sizes: next };
+      })
+    );
   }
 
   async function uploadFiles(files: FileList): Promise<string[]> {
@@ -73,7 +88,18 @@ export function ProductForm({ product }: ProductFormProps) {
   }
 
   function toggleSize(size: string) {
-    setSizes((prev) => prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]);
+    const next = sizes.includes(size) ? sizes.filter((s) => s !== size) : [...sizes, size];
+    setSizes(next);
+    // keep every variant's per-size stock list in sync with the product sizes
+    setVariants((prev) =>
+      prev.map((v) => ({
+        ...v,
+        sizes: next.map((sz) => ({
+          size: sz,
+          stock: v.sizes.find((x) => x.size === sz)?.stock ?? 0,
+        })),
+      }))
+    );
   }
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -106,7 +132,12 @@ export function ProductForm({ product }: ProductFormProps) {
       stock: hasVariants ? variantStockTotal : parseInt(stock),
       description,
       images,
-      variants: variants.map((v) => ({ ...v, color: v.color.trim(), stock: Number(v.stock) || 0 })),
+      variants: variants.map((v) => ({
+        color: v.color.trim(),
+        hex: v.hex,
+        images: v.images,
+        sizes: v.sizes.map((s) => ({ size: s.size, stock: Number(s.stock) || 0 })),
+      })),
     };
     const url = isEditing ? `/api/products/${product.id}` : "/api/products";
     const method = isEditing ? "PUT" : "POST";
@@ -136,7 +167,18 @@ export function ProductForm({ product }: ProductFormProps) {
       </div>
       <div className="space-y-2">
         <Label htmlFor="category">Kategori *</Label>
-        <Input id="category" value={category} onChange={(e) => setCategory(e.target.value)} required placeholder="atasan, bawahan, dress, dll." />
+        <select
+          id="category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          required
+          className="h-9 w-full rounded-sm border border-border bg-background px-3 text-sm outline-none focus:border-foreground"
+        >
+          <option value="" disabled>Pilih kategori</option>
+          {CATEGORIES.map((c) => (
+            <option key={c.slug} value={c.slug}>{c.label}</option>
+          ))}
+        </select>
       </div>
       <div className="space-y-2">
         <Label>Ukuran Tersedia</Label>
@@ -167,7 +209,12 @@ export function ProductForm({ product }: ProductFormProps) {
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => setVariants((prev) => [...prev, { ...EMPTY_VARIANT }])}
+            onClick={() =>
+              setVariants((prev) => [
+                ...prev,
+                { color: "", hex: "#1a1a1a", images: [], sizes: sizes.map((sz) => ({ size: sz, stock: 0 })) },
+              ])
+            }
           >
             <Plus className="mr-1 h-3 w-3" /> Tambah Varian
           </Button>
@@ -197,16 +244,6 @@ export function ProductForm({ product }: ProductFormProps) {
                       className="block h-9 w-12 cursor-pointer border border-border bg-transparent p-0.5"
                     />
                   </div>
-                  <div className="w-24 space-y-1">
-                    <Label htmlFor={`variant-stock-${i}`} className="text-xs">Stok</Label>
-                    <Input
-                      id={`variant-stock-${i}`}
-                      type="number"
-                      min="0"
-                      value={v.stock}
-                      onChange={(e) => updateVariant(i, { stock: parseInt(e.target.value) || 0 })}
-                    />
-                  </div>
                   <Button
                     type="button"
                     variant="outline"
@@ -217,6 +254,31 @@ export function ProductForm({ product }: ProductFormProps) {
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
+
+                {/* Per-size stock */}
+                <div>
+                  <Label className="text-xs">Stok per ukuran</Label>
+                  {sizes.length > 0 ? (
+                    <div className="mt-1 flex flex-wrap gap-2">
+                      {sizes.map((sz) => (
+                        <div key={sz} className="w-16 space-y-1">
+                          <span className="block text-center text-[11px] text-muted-foreground">{sz}</span>
+                          <Input
+                            type="number"
+                            min="0"
+                            value={v.sizes.find((s) => s.size === sz)?.stock ?? 0}
+                            onChange={(e) => setVariantSizeStock(i, sz, parseInt(e.target.value) || 0)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Pilih &quot;Ukuran Tersedia&quot; dulu untuk mengatur stok per ukuran.
+                    </p>
+                  )}
+                </div>
+
                 <div className="space-y-2">
                   {v.images.length > 0 && (
                     <div className="flex flex-wrap gap-2">

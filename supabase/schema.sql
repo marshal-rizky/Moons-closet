@@ -9,8 +9,9 @@ CREATE TABLE products (
   category TEXT NOT NULL DEFAULT '',
   sizes JSONB DEFAULT '[]'::jsonb,
   stock INTEGER NOT NULL DEFAULT 0,
-  -- color variants: [{color, hex, images, stock}]; empty = single-color product,
-  -- non-empty = products.stock is derived (sum of variant stocks)
+  -- color variants: [{color, hex, images, sizes:[{size, stock}]}]; empty =
+  -- single-color product, non-empty = products.stock is derived (sum of all
+  -- per-(color,size) stocks)
   variants JSONB DEFAULT '[]'::jsonb,
   is_active BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -83,6 +84,9 @@ CREATE POLICY "Admin full access to orders"
 CREATE INDEX idx_products_category ON products(category);
 CREATE INDEX idx_products_is_active ON products(is_active);
 CREATE INDEX idx_products_slug ON products(slug);
+-- Trigram index so leading-wildcard ILIKE name search stays fast at scale.
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE INDEX idx_products_name_trgm ON products USING gin (name gin_trgm_ops);
 CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_orders_created_at ON orders(created_at DESC);
 

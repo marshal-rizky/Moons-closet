@@ -123,6 +123,15 @@ export async function PUT(
     }
   }
 
+  // is_active — optional boolean (used for archive/restore)
+  if (raw.is_active !== undefined) {
+    if (typeof raw.is_active !== "boolean") {
+      errors.push("is_active harus berupa boolean");
+    } else {
+      updatePayload.is_active = raw.is_active;
+    }
+  }
+
   // variants — optional; non-empty variants derive total stock
   if (raw.variants !== undefined) {
     const result = validateVariants(raw.variants);

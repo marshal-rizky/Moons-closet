@@ -6,13 +6,8 @@ import { AddToCartButton } from "@/components/store/add-to-cart-button";
 import { ProductGallery } from "@/components/store/product-gallery";
 import { ColorSwatches } from "@/components/store/color-swatches";
 import { effectiveImages, hasVariants, resolveSelectedVariant } from "@/lib/variants";
+import { categoryLabel } from "@/lib/categories";
 import type { Product } from "@/lib/types";
-
-const CATEGORY_LABEL: Record<string, string> = {
-  atasan: "Atasan",
-  bawahan: "Bawahan",
-  dress: "Dress",
-};
 
 export default async function ProductPage({
   params,
@@ -36,7 +31,7 @@ export default async function ProductPage({
 
   const p = product as Product;
   const sku = p.id.slice(0, 8).toUpperCase();
-  const catLabel = CATEGORY_LABEL[p.category] || p.category;
+  const catLabel = categoryLabel(p.category);
   const variant = resolveSelectedVariant(p, color);
   const images = effectiveImages(p, variant);
 

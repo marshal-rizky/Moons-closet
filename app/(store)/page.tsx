@@ -5,13 +5,8 @@ import { siteConfig } from "@/lib/config";
 import { ProductCard } from "@/components/store/product-card";
 import { MoonDivider } from "@/components/store/moon-divider";
 import { FadeIn } from "@/components/ui/fade-in";
+import { CATEGORIES } from "@/lib/categories";
 import type { Product } from "@/lib/types";
-
-const CATEGORY_LABEL: Record<string, string> = {
-  atasan: "Atasan",
-  bawahan: "Bawahan",
-  dress: "Dress",
-};
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -23,12 +18,6 @@ export default async function HomePage() {
     .order("created_at", { ascending: false })
     .limit(9);
 
-  const { data: categoriesRaw } = await supabase
-    .from("products")
-    .select("category")
-    .eq("is_active", true);
-
-  const categories = [...new Set((categoriesRaw || []).map((c) => c.category))].filter(Boolean);
   const list = (products as Product[]) || [];
   const [hero, ...rest] = list;
 
@@ -112,22 +101,23 @@ export default async function HomePage() {
           </div>
         </FadeIn>
 
-        <div className="grid grid-cols-1 gap-px sm:grid-cols-12">
-          {categories.map((cat, i) => {
-            const span = i === 0 ? "sm:col-span-7 sm:row-span-2" : i === 1 ? "sm:col-span-5" : "sm:col-span-5";
-            const aspect = i === 0 ? "aspect-[4/5] sm:aspect-auto sm:h-[80vh]" : "aspect-[5/4] sm:aspect-auto sm:h-[39.7vh]";
+        {/* Uniform editorial grid — scales to any number of categories */}
+        <div className="grid grid-cols-1 gap-px sm:grid-cols-2 lg:grid-cols-3">
+          {CATEGORIES.map((cat, i) => {
             const swatchClass = `zara-swatch-${(i % 8) + 1}`;
             return (
-              <FadeIn key={cat} delay={i * 0.08} className={span}>
+              <FadeIn key={cat.slug} delay={(i % 3) * 0.08}>
                 <Link
-                  href={`/shop?category=${cat}`}
-                  className={`group relative block ${aspect} overflow-hidden ${swatchClass}`}
+                  href={`/shop?category=${cat.slug}`}
+                  className={`group relative block aspect-[4/5] overflow-hidden ${swatchClass}`}
                 >
                   <div className="absolute inset-0 flex items-end p-6 sm:p-10">
                     <div className="text-background mix-blend-difference">
-                      <p className="text-[11px] tracking-[0.18em] uppercase">|0{i + 1}|</p>
-                      <h3 className="mt-2 font-heading text-4xl leading-none uppercase sm:text-6xl">
-                        {CATEGORY_LABEL[cat] || cat}
+                      <p className="text-[11px] tracking-[0.18em] uppercase">
+                        |{String(i + 1).padStart(2, "0")}|
+                      </p>
+                      <h3 className="mt-2 font-heading text-4xl leading-none uppercase sm:text-5xl">
+                        {cat.label}
                       </h3>
                       <p className="mt-3 text-[11px] tracking-[0.12em] uppercase underline underline-offset-[6px]">
                         Belanja

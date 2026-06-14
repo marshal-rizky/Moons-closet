@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { useToast } from "@/lib/toast-context";
+import { effectiveSizes, effectiveStock, variantSizeStock } from "@/lib/variants";
 import type { Product, ProductVariant } from "@/lib/types";
 
 export function AddToCartButton({
@@ -18,13 +19,26 @@ export function AddToCartButton({
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [sizeError, setSizeError] = useState(false);
 
-  const sizes = product.sizes as string[];
-  const stock = selectedVariant ? selectedVariant.stock : product.stock;
-  const outOfStock = stock <= 0;
+  const sizes = effectiveSizes(product, selectedVariant);
+  const totalStock = effectiveStock(product, selectedVariant);
+  const outOfStock = totalStock <= 0;
+
+  // stock for a given size: per-size for variants, shared pool for legacy
+  function sizeStock(size: string): number {
+    return selectedVariant ? variantSizeStock(selectedVariant, size) : product.stock;
+  }
+
+  // when the color changes, drop a selected size that the new color lacks
+  useEffect(() => {
+    if (selectedSize && sizeStock(selectedSize) <= 0) setSelectedSize("");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedVariant]);
+
+  const selectedSizeStock = selectedSize ? sizeStock(selectedSize) : 0;
 
   function handleAdd() {
     if (outOfStock) return;
-    if (!selectedSize) {
+    if (!selectedSize || selectedSizeStock <= 0) {
       setSizeError(true);
       return;
     }
@@ -55,9 +69,11 @@ export function AddToCartButton({
         <div className="mt-3 flex flex-wrap gap-2">
           {sizes.map((size) => {
             const active = selectedSize === size;
+            const soldOut = sizeStock(size) <= 0;
             return (
               <button
                 key={size}
+                disabled={soldOut}
                 onClick={() => {
                   setSelectedSize(size);
                   setSizeError(false);
@@ -66,7 +82,7 @@ export function AddToCartButton({
                   active
                     ? "border-foreground bg-foreground text-background"
                     : "border-foreground/30 hover:border-foreground"
-                }`}
+                } ${soldOut ? "cursor-not-allowed text-foreground/30 line-through hover:border-foreground/30" : ""}`}
               >
                 {size}
               </button>
@@ -84,9 +100,9 @@ export function AddToCartButton({
       {outOfStock && (
         <p className="text-[11px] tracking-[0.08em] uppercase text-destructive">Stok habis</p>
       )}
-      {!outOfStock && stock <= 5 && (
+      {!outOfStock && selectedSize && selectedSizeStock > 0 && selectedSizeStock <= 5 && (
         <p className="text-[11px] tracking-[0.08em] uppercase opacity-70">
-          Sisa {stock} stok
+          Sisa {selectedSizeStock} stok
         </p>
       )}
 

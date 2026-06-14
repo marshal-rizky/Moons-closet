@@ -6,12 +6,11 @@ import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCart } from "@/lib/cart-context";
 import { siteConfig } from "@/lib/config";
+import { CATEGORIES } from "@/lib/categories";
 
 const collections = [
   { label: "Semua Produk", href: "/shop" },
-  { label: "Atasan", href: "/shop?category=atasan" },
-  { label: "Bawahan", href: "/shop?category=bawahan" },
-  { label: "Dress", href: "/shop?category=dress" },
+  ...CATEGORIES.map((c) => ({ label: c.label, href: `/shop?category=${c.slug}` })),
 ];
 
 export function Navbar() {

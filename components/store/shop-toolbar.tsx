@@ -2,22 +2,24 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import { CATEGORIES } from "@/lib/categories";
 
 interface ShopToolbarProps {
-  categories: string[];
   initialSearch?: string;
 }
 
-const CATEGORY_LABEL: Record<string, string> = {
-  atasan: "Atasan",
-  bawahan: "Bawahan",
-  dress: "Dress",
-};
+const SORTS = [
+  { value: "", label: "Terbaru" },
+  { value: "price-asc", label: "Harga ↑" },
+  { value: "price-desc", label: "Harga ↓" },
+];
 
-export function ShopToolbar({ categories, initialSearch = "" }: ShopToolbarProps) {
+export function ShopToolbar({ initialSearch = "" }: ShopToolbarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentCategory = searchParams.get("category") || "";
+  const currentSort = searchParams.get("sort") || "";
+  const inStock = searchParams.get("stock") === "1";
   const [search, setSearch] = useState(initialSearch);
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -25,12 +27,14 @@ export function ShopToolbar({ categories, initialSearch = "" }: ShopToolbarProps
     setSearch(searchParams.get("search") || "");
   }, [searchParams]);
 
+  // Any filter change returns to page 1
   function updateParams(updates: Record<string, string | null>) {
     const params = new URLSearchParams(searchParams.toString());
     for (const [key, value] of Object.entries(updates)) {
       if (value) params.set(key, value);
       else params.delete(key);
     }
+    params.delete("page");
     router.push(`/shop?${params.toString()}`);
   }
 
@@ -50,7 +54,7 @@ export function ShopToolbar({ categories, initialSearch = "" }: ShopToolbarProps
 
   const items = [
     { value: "", label: "View All" },
-    ...categories.map((c) => ({ value: c, label: CATEGORY_LABEL[c] || c })),
+    ...CATEGORIES.map((c) => ({ value: c.slug, label: c.label })),
   ];
 
   return (
@@ -73,8 +77,31 @@ export function ShopToolbar({ categories, initialSearch = "" }: ShopToolbarProps
         })}
       </div>
 
-      {/* Filters / search toggle */}
-      <div className="pt-2 text-[12px] tracking-[0.06em] uppercase">
+      {/* Sort */}
+      <div className="space-y-1.5 border-t border-foreground/10 pt-5 text-[12px] tracking-[0.06em] uppercase">
+        <p className="mb-2 text-[11px] tracking-[0.12em] opacity-40">Urutkan</p>
+        {SORTS.map((s) => {
+          const active = currentSort === s.value;
+          return (
+            <button
+              key={s.value || "newest"}
+              onClick={() => updateParams({ sort: s.value || null })}
+              className={`block w-full text-left uppercase tracking-[0.06em] ${active ? "font-medium" : "opacity-60 hover:opacity-100"}`}
+            >
+              {s.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Filter + search */}
+      <div className="space-y-2 border-t border-foreground/10 pt-5 text-[12px] tracking-[0.06em] uppercase">
+        <button
+          onClick={() => updateParams({ stock: inStock ? null : "1" })}
+          className={`block w-full text-left uppercase tracking-[0.06em] ${inStock ? "font-medium" : "opacity-60 hover:opacity-100"}`}
+        >
+          {inStock ? "× " : ""}Hanya Tersedia
+        </button>
         <button
           onClick={() => setSearchOpen((v) => !v)}
           className="block py-1 uppercase tracking-[0.06em] opacity-60 hover:opacity-100"

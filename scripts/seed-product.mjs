@@ -8,6 +8,8 @@ import { fileURLToPath } from "node:url";
 
 const OUT = path.join(path.dirname(fileURLToPath(import.meta.url)), "out");
 const SLUG = "celana-barrel-high-waist";
+const SIZES = ["S", "M", "L", "XL"];
+const STOCK_PER_SIZE = 3; // per (color, size)
 
 // file groups per color, in gallery order
 // hex sampled from the lit thigh area of each photo set, lifted slightly so
@@ -51,8 +53,18 @@ for (const { color, hex, files } of COLORS) {
     images.push(data.publicUrl);
     console.log("uploaded", key);
   }
-  variants.push({ color, hex, images, stock: 10 });
+  variants.push({
+    color,
+    hex,
+    images,
+    sizes: SIZES.map((size) => ({ size, stock: STOCK_PER_SIZE })),
+  });
 }
+
+const totalStock = variants.reduce(
+  (s, v) => s + v.sizes.reduce((a, x) => a + x.stock, 0),
+  0
+);
 
 const { data, error } = await supabase
   .from("products")
@@ -63,8 +75,8 @@ const { data, error } = await supabase
       "Celana barrel high waist dengan sabuk D-ring, potongan melengkung yang modern dan nyaman. Bahan tebal jatuh, tidak menerawang. Tersedia dalam empat warna.",
     price: 185000,
     category: "bawahan",
-    sizes: ["S", "M", "L", "XL"],
-    stock: variants.reduce((s, v) => s + v.stock, 0),
+    sizes: SIZES,
+    stock: totalStock,
     images: [],
     variants,
     is_active: true,
