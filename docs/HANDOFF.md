@@ -1,20 +1,22 @@
 # Clothing Store Website — Handoff Document
 
-**Last updated:** 2026-06-12
-**Status:** Live. Zara redesign + Moon's Closet branding + color variants + `/links` all deployed to production. Vercel auto-deploys from `main`; env vars set.
+**Last updated:** 2026-06-15
+**Status:** Deployed to production but **pre-launch / experimental** (no custom domain yet). Vercel auto-deploys from `main`.
 **Repo:** https://github.com/marshal-rizky/Moons-closet (private, branch `main`)
 **Production URL:** https://clothing-website-beryl.vercel.app
+**Going live?** Follow [`GO-LIVE.md`](./GO-LIVE.md) — the domain transition runbook.
 
 ---
 
 ## Quick orientation
 
 - **What this is:** a Next.js 16 storefront + admin panel for **Moon's Closet**, a clothing business. Indonesia market, IDR, Bahasa Indonesia.
-- **What's live:** Zara-aesthetic storefront with Moon's Closet logo + moon theme, product color variants (PDP swatches, per-color stock), a seeded 4-color product, and a Linktree-style `/links` page. Admin panel keeps shadcn defaults.
-- **Auto-deploy:** every `git push origin main` redeploys production. Commit author email must be `manmantab50@gmail.com` (the GitHub/Vercel account) or Vercel blocks the deploy — see the variants/branding session doc.
+- **What's live:** Zara-aesthetic storefront with Moon's Closet logo + moon theme; **per-(color,size) stock variants** (PDP swatches + per-size availability); a seeded 4-color product; paginated/sorted/filterable shop; a Linktree-style `/links` page; minimal CTA icons. Admin (auth-protected) has paginated product/order management with search + archive/restore.
+- **Scales with the catalog:** categories live in one file (`lib/categories.ts`); shop + admin are server-paginated; stock decrement is concurrency-safe (optimistic). See the 2026-06-15 session doc.
+- **Auto-deploy:** every `git push origin main` redeploys production. Commit author email must be `manmantab50@gmail.com` (the GitHub/Vercel account) or Vercel blocks the deploy.
 
 For the design rationale and conventions of the Zara redesign, see [`DESIGN-SYSTEM.md`](./DESIGN-SYSTEM.md).
-Session snapshots: [`history/2026-06-12-zara-redesign.md`](./history/2026-06-12-zara-redesign.md) (redesign) and [`history/2026-06-12-variants-branding-session.md`](./history/2026-06-12-variants-branding-session.md) (variants, branding, links, deploy fix).
+Session snapshots: [`history/2026-06-12-zara-redesign.md`](./history/2026-06-12-zara-redesign.md) (redesign), [`history/2026-06-12-variants-branding-session.md`](./history/2026-06-12-variants-branding-session.md) (variants, branding, links, deploy fix), and [`history/2026-06-15-scalability-session.md`](./history/2026-06-15-scalability-session.md) (scalability, icons, menu/sort fixes).
 
 ---
 
@@ -139,12 +141,15 @@ npm run dev
 
 ## Outstanding / future work
 
-### Pre go-live cleanup
-- Delete `/api/test-email` route
-- Remove `console.log` debug from `lib/email.ts`
-- Verify a custom domain in Resend and set `RESEND_FROM_EMAIL=noreply@yourdomain.com`
-- Replace "Nama Toko" defaults with the real store name / tagline / WhatsApp / address
-- Upload real product photos (the design ships gradient swatch placeholders that disappear automatically once `product.images` is non-empty)
+### Pre go-live cleanup → full runbook in [`GO-LIVE.md`](./GO-LIVE.md)
+Quick status:
+- [ ] Delete `/api/test-email` route (still present)
+- [ ] Remove `console.log` debug from `lib/email.ts` (1 left)
+- [ ] Run the trigram search index SQL in Supabase (in `supabase/schema.sql`)
+- [ ] Verify domain in Resend + set `RESEND_FROM_EMAIL=noreply@moonscloset.com`
+- [ ] Set real `NEXT_PUBLIC_STORE_EMAIL` + `NEXT_PUBLIC_STORE_ADDRESS` (still placeholder)
+- [x] Store name / tagline / WhatsApp set (env + Vercel)
+- [ ] Upload real product photos (swatch placeholders vanish once a product/variant has images)
 
 ### Phase 2: Payment integration (Midtrans)
 See [`for-owner/delivery-and-payments-guide.md`](./for-owner/delivery-and-payments-guide.md) for the business-side overview. Implementation tasks:
