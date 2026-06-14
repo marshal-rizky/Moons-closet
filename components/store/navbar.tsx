@@ -7,12 +7,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useCart } from "@/lib/cart-context";
 import { siteConfig } from "@/lib/config";
 
-const sections = [
-  { label: "Atasan", category: "atasan" },
-  { label: "Bawahan", category: "bawahan" },
-  { label: "Dress", category: "dress" },
-];
-
 const collections = [
   { label: "Semua Produk", href: "/shop" },
   { label: "Atasan", href: "/shop?category=atasan" },
@@ -147,61 +141,38 @@ export function Navbar() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25, delay: 0.05 }}
-              className="grid h-[calc(100dvh-3rem)] grid-cols-1 gap-x-12 gap-y-12 overflow-y-auto px-6 pt-8 pb-16 sm:h-[calc(100dvh-3.5rem)] sm:grid-cols-[auto_auto_1fr] sm:px-12 sm:pt-12"
+              className="flex h-[calc(100dvh-3rem)] flex-col justify-between overflow-y-auto px-6 pt-10 pb-16 sm:h-[calc(100dvh-3.5rem)] sm:px-12 sm:pt-16"
             >
-              {/* Top categories */}
-              <div className="space-y-3 text-[17px] sm:text-[19px]">
-                <div className="flex items-center gap-2 font-medium">
-                  <span aria-hidden className="inline-block h-1 w-1 rounded-full bg-foreground" />
-                  Wanita
-                </div>
-                <div className="opacity-50">Anak</div>
-                <div className="opacity-50">Aksesoris</div>
-              </div>
-
-              {/* Numbered sections */}
-              <div className="space-y-2 text-[12px] tracking-[0.08em] uppercase">
-                <div className="flex items-baseline gap-3">
-                  <span className="tabular-nums opacity-60">|01|</span>
-                  <span>Koleksi</span>
-                </div>
-                {sections.map((s, i) => (
-                  <div key={s.category} className="flex items-baseline gap-3 opacity-60">
-                    <span className="tabular-nums">|0{i + 2}|</span>
-                    <span>{s.label}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Product links */}
-              <div className="flex flex-col gap-3 text-[15px] sm:text-[16px]">
-                {collections.map((c) => (
+              {/* Numbered category links */}
+              <nav className="flex flex-col gap-5 sm:gap-6">
+                {collections.map((c, i) => (
                   <Link
                     key={c.href}
                     href={c.href}
                     onClick={() => setMenuOpen(false)}
-                    className="w-fit hover:underline underline-offset-[6px]"
+                    className="flex w-fit items-baseline gap-4 font-heading text-3xl uppercase leading-none transition-opacity hover:opacity-50 sm:text-5xl"
                   >
+                    <span className="font-sans text-[11px] tracking-[0.08em] tabular-nums opacity-50">
+                      |0{i + 1}|
+                    </span>
                     {c.label}
                   </Link>
                 ))}
-                <div className="mt-4 border-t border-foreground/10 pt-4 text-[11px] tracking-[0.08em] uppercase opacity-70">
-                  <Link
-                    href="/contact"
-                    onClick={() => setMenuOpen(false)}
-                    className="block py-1"
-                  >
-                    Kontak
-                  </Link>
-                  <a
-                    href={`https://wa.me/${siteConfig.whatsapp}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block py-1"
-                  >
-                    WhatsApp
-                  </a>
-                </div>
+              </nav>
+
+              {/* Secondary links */}
+              <div className="mt-12 flex flex-col gap-3 border-t border-foreground/10 pt-6 text-[11px] tracking-[0.12em] uppercase opacity-70">
+                <Link href="/contact" onClick={() => setMenuOpen(false)} className="w-fit">
+                  Kontak
+                </Link>
+                <a
+                  href={`https://wa.me/${siteConfig.whatsapp}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-fit"
+                >
+                  WhatsApp
+                </a>
               </div>
             </motion.div>
           </motion.div>
