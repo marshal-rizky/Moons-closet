@@ -91,9 +91,7 @@ Start with `HANDOFF.md` for an orientation, then `DESIGN-SYSTEM.md` before touch
 
 Production deploys from `main` on Vercel. To enable auto-deploy on push, connect this repo in **Vercel → Settings → Git**. After connecting, every `git push origin main` redeploys production; branch pushes generate preview URLs.
 
-To change branding, edit env vars on Vercel and redeploy — no code changes.
-
-> **Pending manual step:** set `NEXT_PUBLIC_STORE_NAME="Moon's Closet"`, `NEXT_PUBLIC_STORE_TAGLINE`, and `NEXT_PUBLIC_STORE_WHATSAPP="6287702228429"` in Vercel → Settings → Environment Variables, then redeploy. Local `.env.local` already has these values.
+To change branding, edit env vars on Vercel and redeploy — no code changes. Store name (`Moon's Closet`), tagline, and the WhatsApp business number (`6287702228429`) are set in both `.env.local` and Vercel.
 
 ---
 
