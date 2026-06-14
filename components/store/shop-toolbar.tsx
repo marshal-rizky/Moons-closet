@@ -10,8 +10,8 @@ interface ShopToolbarProps {
 
 const SORTS = [
   { value: "", label: "Terbaru" },
-  { value: "price-asc", label: "Harga ↑" },
-  { value: "price-desc", label: "Harga ↓" },
+  { value: "price-asc", label: "Termurah" },
+  { value: "price-desc", label: "Termahal" },
 ];
 
 export function ShopToolbar({ initialSearch = "" }: ShopToolbarProps) {
