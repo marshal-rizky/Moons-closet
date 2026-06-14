@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { useToast } from "@/lib/toast-context";
 import type { Product, ProductVariant } from "@/lib/types";
@@ -93,8 +94,9 @@ export function AddToCartButton({
       <button
         onClick={handleAdd}
         disabled={outOfStock}
-        className="w-full border border-foreground bg-background py-4 text-[12px] tracking-[0.12em] uppercase transition-colors hover:bg-foreground hover:text-background disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-background disabled:hover:text-foreground"
+        className="flex w-full items-center justify-center gap-2 border border-foreground bg-background py-4 text-[12px] tracking-[0.12em] uppercase transition-colors hover:bg-foreground hover:text-background disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-background disabled:hover:text-foreground"
       >
+        {!outOfStock && <ShoppingBag className="h-4 w-4" />}
         {outOfStock ? "Stok Habis" : "Tambah ke Tas"}
       </button>
     </div>

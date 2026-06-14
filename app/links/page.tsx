@@ -1,26 +1,45 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Globe, ShoppingBag, Store } from "lucide-react";
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/config";
-import { bioProfile, bioSections } from "@/lib/links";
+import { bioProfile, bioSections, type BioIcon } from "@/lib/links";
+import { InstagramIcon, TikTokIcon, WhatsAppIcon } from "@/components/store/brand-icons";
 
 export const metadata: Metadata = {
   title: `${siteConfig.name} — Links`,
   description: siteConfig.tagline,
 };
 
-const PILL =
-  "block w-full rounded-full border border-foreground/15 bg-white/80 py-4 px-6 text-center text-[13px] tracking-[0.08em] uppercase transition-colors hover:bg-foreground hover:text-background";
+const ICONS: Record<BioIcon, React.ComponentType<{ className?: string }>> = {
+  website: Globe,
+  whatsapp: WhatsAppIcon,
+  instagram: InstagramIcon,
+  tiktok: TikTokIcon,
+  shopee: ShoppingBag,
+  tokopedia: Store,
+};
 
-function BioButton({ label, href }: { label: string; href: string }) {
+const PILL =
+  "flex w-full items-center gap-3 rounded-full border border-foreground/15 bg-white/80 py-4 pl-5 pr-6 text-[13px] tracking-[0.08em] uppercase transition-colors hover:bg-foreground hover:text-background";
+
+function BioButton({ label, href, icon }: { label: string; href: string; icon: BioIcon }) {
+  const Icon = ICONS[icon];
   const external = href.startsWith("http");
+  const inner = (
+    <>
+      <Icon className="h-5 w-5 shrink-0" />
+      <span className="flex-1 text-center">{label}</span>
+      <span aria-hidden className="h-5 w-5 shrink-0" />
+    </>
+  );
   return external ? (
     <a href={href} target="_blank" rel="noopener noreferrer" className={PILL}>
-      {label}
+      {inner}
     </a>
   ) : (
     <Link href={href} className={PILL}>
-      {label}
+      {inner}
     </Link>
   );
 }
@@ -61,11 +80,7 @@ export default function LinksPage() {
           aria-label="Instagram"
           className="mt-4 opacity-80 hover:opacity-100"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-6 w-6" aria-hidden>
-            <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" />
-            <circle cx="12" cy="12" r="4.5" />
-            <circle cx="17.6" cy="6.4" r="1" fill="currentColor" stroke="none" />
-          </svg>
+          <InstagramIcon className="h-6 w-6" />
         </a>
       )}
 
@@ -82,7 +97,7 @@ export default function LinksPage() {
                 </h3>
               )}
               {links.map((link) => (
-                <BioButton key={link.label} label={link.label} href={link.href} />
+                <BioButton key={link.label} label={link.label} href={link.href} icon={link.icon} />
               ))}
             </div>
           );

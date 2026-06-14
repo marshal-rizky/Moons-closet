@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowRight, ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/config";
 import { CartItem } from "@/components/store/cart-item";
@@ -20,8 +21,9 @@ export default function CartPage() {
           </p>
           <Link
             href="/shop"
-            className="mt-10 inline-block border border-foreground px-8 py-3 text-[12px] tracking-[0.12em] uppercase hover:bg-foreground hover:text-background"
+            className="mt-10 inline-flex items-center gap-2 border border-foreground px-8 py-3 text-[12px] tracking-[0.12em] uppercase hover:bg-foreground hover:text-background"
           >
+            <ShoppingBag className="h-4 w-4" />
             Mulai Belanja
           </Link>
         </div>
@@ -67,9 +69,10 @@ export default function CartPage() {
             </div>
             <Link
               href="/checkout"
-              className="mt-6 block w-full border border-foreground py-4 text-center text-[12px] tracking-[0.12em] uppercase hover:bg-foreground hover:text-background"
+              className="mt-6 flex w-full items-center justify-center gap-2 border border-foreground py-4 text-center text-[12px] tracking-[0.12em] uppercase hover:bg-foreground hover:text-background"
             >
               Lanjut ke Checkout
+              <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="/shop"

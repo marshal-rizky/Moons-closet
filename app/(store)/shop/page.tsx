@@ -43,12 +43,12 @@ export default async function ShopPage({
   return (
     <div className="relative">
       {/* Layout: side nav (sticky on desktop) + product column */}
-      <div className="lg:grid lg:grid-cols-[180px_1fr] lg:gap-0">
+      <div className="lg:grid lg:grid-cols-[210px_1fr] lg:gap-0">
         {/* Side nav */}
         <aside className="border-b border-foreground/10 px-4 py-6 sm:px-12 lg:sticky lg:top-12 lg:h-[calc(100dvh-3rem)] lg:overflow-y-auto lg:border-b-0 lg:border-r lg:py-12 lg:pl-12 lg:pr-6">
           <div className="mb-6 hidden lg:block">
             <p className="text-[11px] tracking-[0.18em] uppercase opacity-60">Belanja</p>
-            <h1 className="mt-2 font-heading text-3xl uppercase">{title}</h1>
+            <h1 className="mt-2 font-heading text-2xl uppercase leading-[1.1] break-words">{title}</h1>
             <p className="mt-1 text-[11px] tracking-[0.08em] uppercase opacity-60">
               {totalCount} produk
             </p>

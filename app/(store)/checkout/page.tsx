@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/config";
 
@@ -133,8 +134,9 @@ export default function CheckoutPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full border border-foreground py-4 text-[12px] tracking-[0.12em] uppercase hover:bg-foreground hover:text-background disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 border border-foreground py-4 text-[12px] tracking-[0.12em] uppercase hover:bg-foreground hover:text-background disabled:opacity-50"
           >
+            {!loading && <Check className="h-4 w-4" />}
             {loading ? "Memproses…" : "Konfirmasi Pesanan"}
           </button>
         </form>

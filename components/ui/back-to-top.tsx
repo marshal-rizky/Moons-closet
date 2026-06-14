@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { ArrowUp } from "lucide-react";
 
 export function BackToTop() {
   const [visible, setVisible] = useState(false);
@@ -30,10 +31,11 @@ export function BackToTop() {
           exit={{ opacity: 0, y: 8 }}
           transition={{ duration: 0.18 }}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-6 right-6 z-50 border border-foreground bg-background px-4 py-2 text-[11px] tracking-[0.12em] uppercase hover:bg-foreground hover:text-background"
+          className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-1.5 border border-foreground bg-background px-4 py-2 text-[11px] tracking-[0.12em] uppercase hover:bg-foreground hover:text-background"
           aria-label="Kembali ke atas"
         >
-          ↑ Atas
+          <ArrowUp className="h-3.5 w-3.5" />
+          Atas
         </motion.button>
       )}
     </AnimatePresence>

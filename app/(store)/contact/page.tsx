@@ -1,4 +1,5 @@
 import { siteConfig } from "@/lib/config";
+import { WhatsAppIcon } from "@/components/store/brand-icons";
 
 export default function ContactPage() {
   return (
@@ -48,8 +49,9 @@ export default function ContactPage() {
           href={`https://wa.me/${siteConfig.whatsapp}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block border border-foreground px-8 py-4 text-[12px] tracking-[0.12em] uppercase hover:bg-foreground hover:text-background"
+          className="inline-flex items-center gap-2 border border-foreground px-8 py-4 text-[12px] tracking-[0.12em] uppercase hover:bg-foreground hover:text-background"
         >
+          <WhatsAppIcon className="h-4 w-4" />
           Chat via WhatsApp
         </a>
       </div>
