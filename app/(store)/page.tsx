@@ -5,6 +5,7 @@ import { siteConfig } from "@/lib/config";
 import { ProductCard } from "@/components/store/product-card";
 import { MoonDivider } from "@/components/store/moon-divider";
 import { FadeIn } from "@/components/ui/fade-in";
+import { HeroEntrance } from "@/components/store/hero-entrance";
 import { CATEGORIES } from "@/lib/categories";
 import type { Product } from "@/lib/types";
 
@@ -26,6 +27,7 @@ export default async function HomePage() {
       {/* HERO: full-bleed editorial */}
       {hero && (
         <section className="relative">
+          <HeroEntrance wordmark={siteConfig.name} tagline={siteConfig.tagline} />
           <Link href={`/product/${hero.slug}`}>
             <div className="relative h-[88dvh] w-full overflow-hidden">
               <div
