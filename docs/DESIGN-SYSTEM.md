@@ -142,13 +142,28 @@ When real photos arrive, no changes needed: the swatch is only rendered when `pr
 
 ## 7. Motion
 
-Framer Motion is used for entrance animations only. Conventions:
+**Updated 2026-06-15.** The storefront now uses **expressive but performance-budgeted** motion — a deliberate departure from the original "restraint extends to motion" stance. Full rationale + scope in [`superpowers/specs/2026-06-15-motion-graphics-design.md`](./superpowers/specs/2026-06-15-motion-graphics-design.md). The "Celestial Editorial" concept is driven by the brand crescent mark.
+
+**Tiering** (intensity by surface, so spectacle lives where it films best and the buying flow stays fast):
+
+- **Home — full:** logo-driven hero entrance (`components/store/hero-entrance.tsx`) + crescent-wipe page transitions + moon loader.
+- **Shop / Product — light:** page transitions, moon loader, PDP gallery reveal/crossfade on color switch.
+- **Cart — light:** add-to-cart star-burst micro-interaction.
+- **Checkout — none:** stays clean and instant (page transition explicitly skips `/checkout`).
+
+**Foundations:**
+
+- `lib/motion.ts` — single source of truth for durations, easings, glow, and the `crescentWipe` variant.
+- `lib/motion-context.tsx` — `MotionProvider` + `useMotionEnabled()`: respects `prefers-reduced-motion` and exposes a global kill switch (`MOTION_ENABLED`).
+- Animate **transform / opacity only**; glow is a one-shot `drop-shadow`, not a continuous animation.
+- Every animated element is **visible by default** (SSR-safe) — motion is additive, never an `opacity:0` trap.
+
+**Pre-existing entrance conventions (still in use):**
 
 - `<FadeIn>` wrapper (`components/ui/fade-in.tsx`) — 16px upward translate, 0.4s ease-out, `whileInView` with `once: true`.
 - Cart badge: `AnimatePresence` keyed on count for a small pop on change.
 - Menu drawer: backdrop fade 0.18s, content slide-up 0.25s, slight delay so the backdrop appears first.
 - Back-to-top: fade + small y translate.
-- **No animation on hover** beyond CSS color transitions — Zara's restraint extends to motion.
 
 ---
 
@@ -176,8 +191,8 @@ Source logo (rose-gold on cream) processed by `scripts/process-logo.py` into `pu
 | `app/icon.png` | Favicon — gold mark on cream |
 
 Rules:
-- **Cream `#faf0e6`** is exposed as the `cream` Tailwind color (`bg-cream`) — the ONLY sanctioned non-B/W chrome color. Current uses: moon divider band, `/links` page background, favicon. Do not spread it further without a system-level discussion.
-- **Gold** appears only in: moon divider mark, links page mark, favicon. Everything else uses the black (or white-blend) logo.
+- **Cream `#faf0e6`** is exposed as the `cream` Tailwind color (`bg-cream`) — the ONLY sanctioned non-B/W chrome color. Current uses: moon divider band, `/links` page background, favicon, and motion surfaces (hero-entrance overlay, page-transition wipe, moon loader). Do not spread it further without a system-level discussion.
+- **Gold `#b08d57`** (exported as `GOLD` in `lib/motion.ts`) appears in: moon divider mark, links page mark, favicon, and motion accents (hero-entrance crescent + hairlines, moon loader disc, add-to-cart star-burst, the `CrescentMark` SVG). Everything else uses the black (or white-blend) logo.
 - Color variant swatches on product cards/PDP use each variant's `hex` inline — product data, not chrome.
 
 ## 10. What's intentionally NOT in the system
