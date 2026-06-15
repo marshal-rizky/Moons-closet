@@ -35,6 +35,7 @@ export function AddToCartButton({
 
   // when the color changes, drop a selected size that the new color lacks
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (selectedSize && sizeStock(selectedSize) <= 0) setSelectedSize("");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedVariant]);

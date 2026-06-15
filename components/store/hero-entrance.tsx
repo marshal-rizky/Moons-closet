@@ -24,10 +24,7 @@ export function HeroEntrance({
   const [done, setDone] = useState(false);
 
   useEffect(() => {
-    if (!enabled) {
-      setDone(true);
-      return;
-    }
+    if (!enabled) return;
     const timer = setTimeout(() => setDone(true), 1600);
     const skip = () => setDone(true);
     window.addEventListener("scroll", skip, { passive: true, once: true });

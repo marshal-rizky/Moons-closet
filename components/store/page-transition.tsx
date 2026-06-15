@@ -26,6 +26,8 @@ export function PageTransition() {
     }
     // Checkout stays motion-free (spec §2) — no wipe when landing there.
     if (pathname?.startsWith("/checkout")) return;
+    // Intentionally syncs the overlay to route changes (router = external system).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCount((c) => c + 1);
   }, [pathname]);
 

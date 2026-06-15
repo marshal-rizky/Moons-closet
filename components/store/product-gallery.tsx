@@ -1,10 +1,4 @@
-"use client";
-
 import Image from "next/image";
-import { useRef } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { useMotionEnabled } from "@/lib/motion-context";
-import { duration, ease } from "@/lib/motion";
 
 const SWATCHES = [
   "zara-swatch-1",
@@ -24,23 +18,18 @@ function swatchFor(seed: string) {
 }
 
 export function ProductGallery({ images, name }: { images: string[]; name: string }) {
-  const enabled = useMotionEnabled();
-
   // Stack vertically like Zara — no thumbnails, scroll through all shots.
   const items: (string | number)[] =
     images.length > 0 ? images : Array.from({ length: 2 }, (_, i) => i);
 
-  // Signature changes when the selected color (image set) changes.
+  // The key changes when the selected color (image set) changes; React remounts
+  // the stack so the CSS `gallery-fade` reveal replays — a fade-in on first load
+  // and on each color switch. Pure CSS keeps images SSR-visible (no opacity:0 in
+  // the HTML) and respects prefers-reduced-motion via the media query.
   const sig = images.length > 0 ? images.join("|") : `ph-${name}`;
 
-  // Don't animate the very first render (keeps images SSR-visible, no flash);
-  // crossfade only when the signature changes (color switch).
-  const prevSig = useRef(sig);
-  const isChange = prevSig.current !== sig;
-  prevSig.current = sig;
-
-  const stack = (
-    <div className="flex flex-col gap-1">
+  return (
+    <div key={sig} className="gallery-fade flex flex-col gap-1">
       {items.map((src, i) => {
         if (typeof src === "string") {
           return (
@@ -72,20 +61,5 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
         );
       })}
     </div>
-  );
-
-  if (!enabled) return stack;
-
-  return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={sig}
-        initial={isChange ? { opacity: 0 } : false}
-        animate={{ opacity: 1, transition: { duration: duration.base, ease: ease.standard } }}
-        exit={{ opacity: 0, transition: { duration: duration.instant } }}
-      >
-        {stack}
-      </motion.div>
-    </AnimatePresence>
   );
 }

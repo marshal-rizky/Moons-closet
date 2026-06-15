@@ -177,3 +177,15 @@
 @media (prefers-reduced-motion: reduce) {
   .moon-loader-disc { animation: none; }
 }
+
+/* Product gallery reveal — fades in on mount and on each color switch (the
+   React key changes per image set, remounting the stack so this replays).
+   Pure CSS keeps the images visible in the SSR HTML. */
+@keyframes gallery-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.gallery-fade { animation: gallery-fade 0.4s ease both; }
+@media (prefers-reduced-motion: reduce) {
+  .gallery-fade { animation: none; }
+}
