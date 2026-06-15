@@ -4,9 +4,10 @@
 import { createContext, useContext, type ReactNode } from "react";
 import { useReducedMotion } from "framer-motion";
 
-/** Global kill switch — set to false to disable ALL storefront motion in prod
- *  without a code-shape change. */
-const MOTION_ENABLED = true;
+/** Global kill switch for JS-driven motion. Disable in prod by setting
+ *  NEXT_PUBLIC_MOTION_ENABLED="false" (no code change). Note: the pure-CSS
+ *  reveal/loader honor prefers-reduced-motion only, not this flag. */
+const MOTION_ENABLED = process.env.NEXT_PUBLIC_MOTION_ENABLED !== "false";
 
 const MotionContext = createContext<boolean>(true);
 

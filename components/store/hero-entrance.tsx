@@ -10,8 +10,12 @@ import { ease, GOLD, goldGlow } from "@/lib/motion";
 /**
  * Cream overlay above the static hero. Plays the assemble-in sequence (~1.6s),
  * then fades to reveal the real resting hero (PNG logo) underneath. Dismisses
- * early on first scroll or tap. Renders nothing when motion is disabled, so the
- * static hero is shown immediately (SSR-safe — overlay is pure enhancement).
+ * early on first scroll or tap.
+ *
+ * The overlay is activated only AFTER client mount (`show`), so it never renders
+ * during SSR. That keeps the resting hero visible with no JS / slow JS (no
+ * opacity:0 trap) and avoids a hydration mismatch for reduced-motion users
+ * (server and first client render both produce no overlay).
  */
 export function HeroEntrance({
   wordmark,
@@ -21,12 +25,15 @@ export function HeroEntrance({
   tagline: string;
 }) {
   const enabled = useMotionEnabled();
-  const [done, setDone] = useState(false);
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     if (!enabled) return;
-    const timer = setTimeout(() => setDone(true), 1600);
-    const skip = () => setDone(true);
+    // Client-only activation: intentionally turns the overlay on after mount.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setShow(true);
+    const timer = setTimeout(() => setShow(false), 1600);
+    const skip = () => setShow(false);
     window.addEventListener("scroll", skip, { passive: true, once: true });
     window.addEventListener("pointerdown", skip, { once: true });
     return () => {
@@ -36,11 +43,9 @@ export function HeroEntrance({
     };
   }, [enabled]);
 
-  if (!enabled) return null;
-
   return (
     <AnimatePresence>
-      {!done && (
+      {show && (
         <motion.div
           className="absolute inset-0 z-20 grid place-items-center bg-cream"
           initial={{ opacity: 1 }}

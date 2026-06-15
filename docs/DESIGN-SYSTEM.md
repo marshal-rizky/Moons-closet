@@ -156,7 +156,8 @@ When real photos arrive, no changes needed: the swatch is only rendered when `pr
 - `lib/motion.ts` — single source of truth for durations, easings, glow, and the `crescentWipe` variant.
 - `lib/motion-context.tsx` — `MotionProvider` + `useMotionEnabled()`: respects `prefers-reduced-motion` and exposes a global kill switch (`MOTION_ENABLED`).
 - Animate **transform / opacity only**; glow is a one-shot `drop-shadow`, not a continuous animation.
-- Every animated element is **visible by default** (SSR-safe) — motion is additive, never an `opacity:0` trap.
+- Every animated element is **visible by default** (SSR-safe) — motion is additive, never an `opacity:0` trap. JS-driven overlays (hero, transition, burst) activate only after client mount, so SSR / no-JS always shows finished content.
+- **Kill-switch scope:** `MOTION_ENABLED` / `useMotionEnabled()` gate the JS (Framer) motion. The pure-CSS reveal (`.gallery-fade`) and loader (`.moon-loader-disc`) honor `prefers-reduced-motion` only — they can't read the React flag, by design (they're harmless 0.4s opacity fades, zero CLS).
 
 **Pre-existing entrance conventions (still in use):**
 
