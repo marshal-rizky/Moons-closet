@@ -1,6 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import { useRef } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useMotionEnabled } from "@/lib/motion-context";
+import { duration, ease } from "@/lib/motion";
 
 const SWATCHES = [
   "zara-swatch-1",
@@ -20,19 +24,30 @@ function swatchFor(seed: string) {
 }
 
 export function ProductGallery({ images, name }: { images: string[]; name: string }) {
-  // Stack vertically like Zara — no thumbnails, scroll through all shots
-  const items =
-    images.length > 0
-      ? images
-      : // placeholder: render 2 differently-toned swatches for visual variety
-        Array.from({ length: 2 }, (_, i) => i);
+  const enabled = useMotionEnabled();
 
-  return (
+  // Stack vertically like Zara — no thumbnails, scroll through all shots.
+  const items: (string | number)[] =
+    images.length > 0 ? images : Array.from({ length: 2 }, (_, i) => i);
+
+  // Signature changes when the selected color (image set) changes.
+  const sig = images.length > 0 ? images.join("|") : `ph-${name}`;
+
+  // Don't animate the very first render (keeps images SSR-visible, no flash);
+  // crossfade only when the signature changes (color switch).
+  const prevSig = useRef(sig);
+  const isChange = prevSig.current !== sig;
+  prevSig.current = sig;
+
+  const stack = (
     <div className="flex flex-col gap-1">
       {items.map((src, i) => {
         if (typeof src === "string") {
           return (
-            <div key={i} className="relative aspect-[3/4] w-full overflow-hidden bg-secondary">
+            <div
+              key={i}
+              className="relative aspect-[3/4] w-full overflow-hidden bg-secondary"
+            >
               <Image
                 src={src}
                 alt={`${name} ${i + 1}`}
@@ -57,5 +72,20 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
         );
       })}
     </div>
+  );
+
+  if (!enabled) return stack;
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={sig}
+        initial={isChange ? { opacity: 0 } : false}
+        animate={{ opacity: 1, transition: { duration: duration.base, ease: ease.standard } }}
+        exit={{ opacity: 0, transition: { duration: duration.instant } }}
+      >
+        {stack}
+      </motion.div>
+    </AnimatePresence>
   );
 }
