@@ -11,12 +11,12 @@
 ## Quick orientation
 
 - **What this is:** a Next.js 16 storefront + admin panel for **Moon's Closet**, a clothing business. Indonesia market, IDR, Bahasa Indonesia.
-- **What's live:** Zara-aesthetic storefront with Moon's Closet logo + moon theme; **per-(color,size) stock variants** (PDP swatches + per-size availability); a seeded 4-color product; paginated/sorted/filterable shop; a Linktree-style `/links` page; minimal CTA icons. Admin (auth-protected) has paginated product/order management with search + archive/restore.
+- **What's live:** Zara-aesthetic storefront with Moon's Closet logo + moon theme; **per-(color,size) stock variants** (PDP swatches + per-size availability); a seeded 4-color product; paginated/sorted/filterable shop; a Linktree-style `/links` page; minimal CTA icons; **"Celestial Editorial" motion graphics** (logo-driven hero entrance, moon loader + crescent page transitions, PDP gallery reveal, add-to-cart burst — tiered, performance-budgeted, reduced-motion aware). Admin (auth-protected) has paginated product/order management with search + archive/restore.
 - **Scales with the catalog:** categories live in one file (`lib/categories.ts`); shop + admin are server-paginated; stock decrement is concurrency-safe (optimistic). See the 2026-06-15 session doc.
 - **Auto-deploy:** every `git push origin main` redeploys production. Commit author email must be `manmantab50@gmail.com` (the GitHub/Vercel account) or Vercel blocks the deploy.
 
 For the design rationale and conventions of the Zara redesign, see [`DESIGN-SYSTEM.md`](./DESIGN-SYSTEM.md).
-Session snapshots: [`history/2026-06-12-zara-redesign.md`](./history/2026-06-12-zara-redesign.md) (redesign), [`history/2026-06-12-variants-branding-session.md`](./history/2026-06-12-variants-branding-session.md) (variants, branding, links, deploy fix), and [`history/2026-06-15-scalability-session.md`](./history/2026-06-15-scalability-session.md) (scalability, icons, menu/sort fixes).
+Session snapshots: [`history/2026-06-12-zara-redesign.md`](./history/2026-06-12-zara-redesign.md) (redesign), [`history/2026-06-12-variants-branding-session.md`](./history/2026-06-12-variants-branding-session.md) (variants, branding, links, deploy fix), [`history/2026-06-15-scalability-session.md`](./history/2026-06-15-scalability-session.md) (scalability, icons, menu/sort fixes), and [`history/2026-06-15-motion-graphics-session.md`](./history/2026-06-15-motion-graphics-session.md) (Celestial Editorial motion layer). Motion design + plan live in [`superpowers/specs/`](./superpowers/specs/) and [`superpowers/plans/`](./superpowers/plans/).
 
 ---
 
@@ -34,6 +34,7 @@ Session snapshots: [`history/2026-06-12-zara-redesign.md`](./history/2026-06-12-
 - **404** (`app/not-found.tsx`) — Editorial `|404| HILANG` with crescent mark.
 - **Menu drawer** — Full-screen multi-column nav opened from hamburger.
 - **Back-to-top** — Outlined "↑ ATAS" pill.
+- **Motion ("Celestial Editorial")** — Crescent-mark-driven motion, tiered (Home full / Shop·Product light / Checkout none): hero entrance, moon loader + crescent page transitions, PDP gallery reveal/swatch crossfade, add-to-cart star-burst. Centralized in `lib/motion.ts` + `lib/motion-context.tsx` (reduced-motion + `NEXT_PUBLIC_MOTION_ENABLED` kill switch). SSR-safe (overlays activate post-mount). See `DESIGN-SYSTEM.md` §7.
 
 ### Admin panel (`/admin/*`) — auth-protected
 - **Login** (`/admin/login`) — Supabase email/password.
