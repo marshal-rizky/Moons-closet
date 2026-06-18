@@ -16,7 +16,6 @@ function getResend() {
 export async function sendAdminOrderAlert(order: Order) {
   const resend = getResend();
   if (!resend) return;
-  console.log("Sending admin alert email to:", siteConfig.email);
   const itemCount = order.items.reduce((sum, i) => sum + i.quantity, 0);
 
   await resend.emails.send({

@@ -144,10 +144,10 @@ npm run dev
 
 ### Pre go-live cleanup → full runbook in [`GO-LIVE.md`](./GO-LIVE.md)
 Quick status:
-- [ ] Delete `/api/test-email` route (still present)
-- [ ] Remove `console.log` debug from `lib/email.ts` (1 left)
+- [x] Delete `/api/test-email` route (done 2026-06-18)
+- [x] Remove `console.log` debug from `lib/email.ts` (done 2026-06-18)
 - [ ] Run the trigram search index SQL in Supabase (in `supabase/schema.sql`)
-- [ ] Verify domain in Resend + set `RESEND_FROM_EMAIL=noreply@moonscloset.com`
+- [x] Verify domain in Resend (`moonscloset.com` verified 2026-06-18) — still need to set `RESEND_FROM_EMAIL=noreply@moonscloset.com` in Vercel + redeploy
 - [ ] Set real `NEXT_PUBLIC_STORE_EMAIL` + `NEXT_PUBLIC_STORE_ADDRESS` (still placeholder)
 - [x] Store name / tagline / WhatsApp set (env + Vercel)
 - [ ] Upload real product photos (swatch placeholders vanish once a product/variant has images)
