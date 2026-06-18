@@ -110,3 +110,12 @@ CREATE POLICY "Admin can delete product images"
   ON storage.objects FOR DELETE
   TO authenticated
   USING (bucket_id = 'product-images');
+
+-- Payments (Midtrans) — added 2026-06-18
+ALTER TABLE orders
+  ADD COLUMN IF NOT EXISTS payment_method TEXT NOT NULL DEFAULT 'whatsapp',
+  ADD COLUMN IF NOT EXISTS payment_status TEXT NOT NULL DEFAULT 'unpaid',
+  ADD COLUMN IF NOT EXISTS midtrans_order_id TEXT,
+  ADD COLUMN IF NOT EXISTS midtrans_transaction_id TEXT,
+  ADD COLUMN IF NOT EXISTS paid_at TIMESTAMPTZ;
+CREATE INDEX IF NOT EXISTS idx_orders_midtrans_order_id ON orders(midtrans_order_id);

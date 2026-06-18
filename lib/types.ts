@@ -36,6 +36,9 @@ export type OrderItem = {
   image: string | null;
 };
 
+export type PaymentMethod = "online" | "whatsapp";
+export type PaymentStatus = "unpaid" | "pending" | "paid" | "failed" | "expired";
+
 export type Order = {
   id: string;
   order_number: number;
@@ -46,6 +49,11 @@ export type Order = {
   items: OrderItem[];
   total: number;
   status: "pending" | "confirmed" | "shipped" | "done";
+  payment_method: PaymentMethod;
+  payment_status: PaymentStatus;
+  midtrans_order_id: string | null;
+  midtrans_transaction_id: string | null;
+  paid_at: string | null;
   notes: string | null;
   created_at: string;
   updated_at: string;
