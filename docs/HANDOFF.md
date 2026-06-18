@@ -152,14 +152,24 @@ Quick status:
 - [x] Store name / tagline / WhatsApp set (env + Vercel)
 - [ ] Upload real product photos (swatch placeholders vanish once a product/variant has images)
 
-### Phase 2: Payment integration (Midtrans)
-See [`for-owner/delivery-and-payments-guide.md`](./for-owner/delivery-and-payments-guide.md) for the business-side overview. Implementation tasks:
-- Add Midtrans columns to `orders`: `payment_method`, `payment_status`, `midtrans_transaction_id`, `midtrans_snap_token`, `paid_at`
-- `POST /api/payments/create` — server creates Midtrans transaction, returns `snap_token`
-- `POST /api/payments/webhook` — verify signature, update payment status, restore stock on failure
-- Update checkout to open Snap popup and handle success / pending / error callbacks
-- Show payment status in admin order detail
-- Payment expiry handling
+### Phase 2: Payment integration (Midtrans) — IN PROGRESS (code done 2026-06-18, branch `feat/midtrans-payments`)
+See [`for-owner/delivery-and-payments-guide.md`](./for-owner/delivery-and-payments-guide.md) for the business-side overview. Design + plan: [`superpowers/specs/2026-06-18-midtrans-payments-design.md`](./superpowers/specs/2026-06-18-midtrans-payments-design.md), [`superpowers/plans/2026-06-18-midtrans-payments.md`](./superpowers/plans/2026-06-18-midtrans-payments.md).
+
+Built (Snap popup + WhatsApp fallback; no new npm deps):
+- [x] Midtrans columns on `orders`: `payment_method`, `payment_status`, `midtrans_order_id`, `midtrans_transaction_id`, `paid_at` (migration in `supabase/schema.sql`)
+- [x] `POST /api/orders` creates the Snap transaction for online orders and returns `snap_token` (no separate `/create` route — folded into order creation)
+- [x] `POST /api/payments/webhook` — signature-verified, idempotent; marks paid / restores stock on expire/fail
+- [x] Checkout: "Bayar Online" (Snap popup) + "Pesan via WhatsApp" fallback
+- [x] Payment method/status shown in admin order detail + list ("Lunas")
+- [x] Expiry handled via Midtrans `expire` webhook → stock restored
+- [x] Stock model: deduct at order creation (both paths); webhook restores on failure. `payment_status` separate from fulfillment `status`; paid online stays Pending for manual review.
+
+Remaining (manual — owner):
+- [ ] Run the payment-columns SQL in Supabase (the `ALTER TABLE` block at the end of `supabase/schema.sql`)
+- [ ] Set sandbox env vars on Vercel + `.env.local`: `MIDTRANS_SERVER_KEY`, `MIDTRANS_IS_PRODUCTION=false`, `NEXT_PUBLIC_MIDTRANS_CLIENT_KEY`, `NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION=false`
+- [ ] Set the Midtrans Sandbox **Payment Notification URL** to `https://<deploy>/api/payments/webhook`
+- [ ] Deployed sandbox test: pay (QRIS/VA simulator) → Lunas; expire → stock restored; WA path regression
+- [ ] Go-live: production keys, flip both `*_IS_PRODUCTION=true`, production notification URL `https://moonscloset.com/api/payments/webhook`, complete Midtrans KYC (KTP + bank account; 3–7 day approval)
 
 ### Phase 3: Delivery integration (RajaOngkir)
 - Add columns to `orders`: `shipping_courier`, `shipping_service`, `shipping_cost`, `shipping_tracking_number`, `shipping_city_id`, `weight`
