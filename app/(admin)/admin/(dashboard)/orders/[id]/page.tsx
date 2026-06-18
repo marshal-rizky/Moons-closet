@@ -4,6 +4,7 @@ import { formatPrice } from "@/lib/config";
 import { OrderStatusBadge } from "@/components/admin/order-status-badge";
 import { OrderTimeline } from "@/components/admin/order-timeline";
 import { OrderStatusUpdater } from "./status-updater";
+import { PaymentBadge } from "@/components/admin/payment-badge";
 import type { Order } from "@/lib/types";
 
 export default async function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -38,6 +39,16 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           {o.customer_email && <p className="text-muted-foreground">{o.customer_email}</p>}
           <p className="text-muted-foreground">{o.customer_address}</p>
         </div>
+      </div>
+
+      <div className="rounded-sm border border-border p-4 mb-6">
+        <h2 className="text-xs uppercase tracking-wider text-muted-foreground mb-3">Pembayaran</h2>
+        <PaymentBadge method={o.payment_method} status={o.payment_status} />
+        {o.paid_at && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            Dibayar {new Date(o.paid_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+          </p>
+        )}
       </div>
 
       <div className="rounded-sm border border-border p-4 mb-6">

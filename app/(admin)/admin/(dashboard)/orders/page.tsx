@@ -19,7 +19,12 @@ export default async function AdminOrdersPage() {
           <Link key={order.id} href={`/admin/orders/${order.id}`}
             className="grid sm:grid-cols-5 gap-2 sm:gap-4 border-b border-border px-4 py-3 last:border-0 hover:bg-secondary/30 transition-colors">
             <span className="text-sm font-medium">#{order.order_number}</span>
-            <span className="text-sm">{order.customer_name}</span>
+            <span className="text-sm">
+              {order.customer_name}
+              {order.payment_status === "paid" && (
+                <span className="ml-2 rounded-sm bg-green-100 px-1.5 py-0.5 text-[10px] font-medium text-green-800">Lunas</span>
+              )}
+            </span>
             <span className="text-sm">{formatPrice(order.total)}</span>
             <span><OrderStatusBadge status={order.status} /></span>
             <span className="text-xs text-muted-foreground">{new Date(order.created_at).toLocaleDateString("id-ID")}</span>
