@@ -2,12 +2,14 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendAdminOrderAlert } from "@/lib/email";
 import { buildCells, decrementStock } from "@/lib/stock";
+import { createSnapTransaction } from "@/lib/midtrans";
 import type { Order, ProductVariant } from "@/lib/types";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { customer_name, customer_phone, customer_address, customer_email, items, notes } = body;
+    const paymentMethod: "online" | "whatsapp" = body.payment_method === "online" ? "online" : "whatsapp";
 
     // --- Basic field validation ---
     if (!customer_name || !customer_phone || !customer_address || !Array.isArray(items) || items.length === 0) {
@@ -204,6 +206,8 @@ export async function POST(request: Request) {
         total,
         notes: notes?.trim() || null,
         status: "pending",
+        payment_method: paymentMethod,
+        payment_status: "unpaid",
       })
       .select("id, order_number")
       .single();
@@ -233,6 +237,42 @@ export async function POST(request: Request) {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     } as Order);
+
+    // --- Online payment: create Midtrans Snap transaction ---
+    if (paymentMethod === "online") {
+      const midtransOrderId = `MC-${data.order_number}-${Math.random().toString(36).slice(2, 8)}`;
+      try {
+        const snap = await createSnapTransaction({
+          orderId: midtransOrderId,
+          grossAmount: total,
+          items: orderItems.map((oi) => ({
+            id: oi.product_id,
+            price: oi.price,
+            quantity: oi.quantity,
+            name: `${oi.name}${oi.color ? ` ${oi.color}` : ""} ${oi.size}`,
+          })),
+          customer: {
+            first_name: customer_name.trim(),
+            phone: phoneClean,
+            email: customer_email?.trim() || null,
+          },
+        });
+
+        await supabase
+          .from("orders")
+          .update({ midtrans_order_id: midtransOrderId, payment_status: "pending" })
+          .eq("id", data.id);
+
+        return NextResponse.json({ success: true, order: data, snap_token: snap.token });
+      } catch (err) {
+        console.error("Snap creation failed:", err);
+        // Order + stock already committed; tell client payment couldn't start.
+        return NextResponse.json(
+          { error: "Pesanan dibuat, tetapi pembayaran gagal dimulai. Hubungi kami via WhatsApp.", order: data },
+          { status: 502 }
+        );
+      }
+    }
 
     return NextResponse.json({ success: true, order: data });
   } catch {
