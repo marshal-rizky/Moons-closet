@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendAdminOrderAlert } from "@/lib/email";
-import { sumVariantStock } from "@/lib/validate-variants";
+import { buildCells, decrementStock } from "@/lib/stock";
 import type { Order, ProductVariant } from "@/lib/types";
 
 export async function POST(request: Request) {
@@ -162,16 +162,7 @@ export async function POST(request: Request) {
     }
 
     // --- Aggregate quantities per (product, color, size) cell ---
-    const cells = new Map<
-      string,
-      { product_id: string; color: string | null; size: string; quantity: number }
-    >();
-    for (const oi of orderItems) {
-      const key = `${oi.product_id}::${oi.color ?? ""}::${oi.size}`;
-      const entry = cells.get(key);
-      if (entry) entry.quantity += oi.quantity;
-      else cells.set(key, { product_id: oi.product_id, color: oi.color, size: oi.size, quantity: oi.quantity });
-    }
+    const cells = buildCells(orderItems);
 
     // --- Stock check: variant products per (color,size); legacy per product ---
     const legacyByProduct = new Map<string, number>();
@@ -225,52 +216,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // --- Decrement stock with optimistic concurrency: re-read the row, apply the
-    // decrement, and write only if the total stock hasn't changed since the read
-    // (`.eq("stock", fresh.stock)` guard). On a concurrent change the guard misses
-    // and we retry with fresh data — preventing lost updates without a DB lock. ---
-    const productIdsToUpdate = new Set([...cells.values()].map((c) => c.product_id));
-    for (const pid of productIdsToUpdate) {
-      const base = productMap.get(pid);
-      if (!base) continue;
-      const isVariant = Array.isArray(base.variants) && base.variants.length > 0;
-
-      for (let attempt = 0; attempt < 4; attempt++) {
-        const { data: fresh } = await supabase
-          .from("products")
-          .select("variants, stock")
-          .eq("id", pid)
-          .single();
-        if (!fresh) break;
-
-        if (isVariant) {
-          const freshVariants = (fresh.variants ?? []) as ProductVariant[];
-          const updatedVariants = freshVariants.map((v) => ({
-            ...v,
-            sizes: (v.sizes ?? []).map((s) => {
-              const cell = cells.get(`${pid}::${v.color}::${s.size}`);
-              return cell ? { ...s, stock: Math.max(0, s.stock - cell.quantity) } : s;
-            }),
-          }));
-          const { data: upd } = await supabase
-            .from("products")
-            .update({ variants: updatedVariants, stock: sumVariantStock(updatedVariants) })
-            .eq("id", pid)
-            .eq("stock", fresh.stock)
-            .select("id");
-          if (upd && upd.length) break;
-        } else {
-          const qty = legacyByProduct.get(pid) ?? 0;
-          const { data: upd } = await supabase
-            .from("products")
-            .update({ stock: Math.max(0, fresh.stock - qty) })
-            .eq("id", pid)
-            .eq("stock", fresh.stock)
-            .select("id");
-          if (upd && upd.length) break;
-        }
-      }
-    }
+    // --- Decrement stock (optimistic concurrency in lib/stock.ts) ---
+    await decrementStock(supabase, cells);
 
     // --- Send admin notification email ---
     await sendAdminOrderAlert({
